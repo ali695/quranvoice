@@ -1,15 +1,32 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { SectionHeader } from '@/components/ui/SectionHeader';
+import { getLastRead } from '@/lib/services/progressService';
 import type { ReadingProgress } from '@/lib/types/quran';
 
 interface ContinueReadingProps {
-  /** When undefined, renders the empty (default) state. */
+  /**
+   * Optional override. When omitted, the component reads the user's
+   * real last-read position from `progressService` (localStorage today,
+   * Supabase when signed-in via the user-feature provider).
+   */
   progress?: ReadingProgress;
 }
 
-export function ContinueReading({ progress }: ContinueReadingProps) {
+export function ContinueReading({ progress: overrideProgress }: ContinueReadingProps) {
+  const [progress, setProgress] = useState<ReadingProgress | null>(overrideProgress ?? null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (!overrideProgress) {
+      setProgress(getLastRead());
+    }
+  }, [overrideProgress]);
   return (
     <section className="container-page py-12 md:py-16">
       <SectionHeader
@@ -18,7 +35,7 @@ export function ContinueReading({ progress }: ContinueReadingProps) {
         description="Pick up where you left off, anytime and on any device."
       />
 
-      {progress ? <ProgressCard p={progress} /> : <EmptyCard />}
+      {mounted && progress ? <ProgressCard p={progress} /> : <EmptyCard />}
     </section>
   );
 }

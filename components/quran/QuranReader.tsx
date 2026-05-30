@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useAudioPlayer } from '@/components/audio/AudioPlayerProvider';
+import { SettingsDrawer } from '@/components/settings/SettingsDrawer';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -27,6 +28,7 @@ export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: Qur
   const [translationLoading, setTranslationLoading] = useState(false);
   const [showTranslation, setShowTranslation] = useState(true);
   const [arabicSize, setArabicSize] = useState(32);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Hydrate display preferences from settings.
   useEffect(() => {
@@ -97,6 +99,15 @@ export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: Qur
           >
             {showTranslation ? 'Hide translation' : 'Show translation'}
           </button>
+          <button
+            type="button"
+            onClick={() => setSettingsOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-ink-600/70 px-3 py-2 text-xs font-medium text-cream-200/80 hover:border-gold-500/40 hover:text-gold-300"
+            aria-label="Reader settings"
+          >
+            <Icon name="settings" size={12} />
+            Settings
+          </button>
         </div>
         <div className="flex items-center gap-2 text-xs text-cream-200/65">
           <span>Arabic size</span>
@@ -119,6 +130,8 @@ export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: Qur
           </button>
         </div>
       </div>
+
+      <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
 
       <QuranNavigation surahNumber={surah.number} />
 

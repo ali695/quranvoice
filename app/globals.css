@@ -124,6 +124,12 @@
   }
 }
 
+/* Animated audio bars on the "Now reciting" badge. */
+@keyframes reciting {
+  0%, 100% { transform: scaleY(0.45); }
+  50%      { transform: scaleY(1);    }
+}
+
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
