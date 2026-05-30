@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Islamic arabesque geometric tile">
+  <rect width="200" height="200" fill="#0d1220"/>
+  <g fill="none" stroke="rgba(212,165,116,0.55)" stroke-width="0.7">
+    <path d="M100 10 L185 60 L185 140 L100 190 L15 140 L15 60 Z"/>
+    <path d="M100 35 L160 70 L160 130 L100 165 L40 130 L40 70 Z"/>
+    <path d="M100 60 L135 80 L135 120 L100 140 L65 120 L65 80 Z"/>
+    <circle cx="100" cy="100" r="14"/>
+    <path d="M100 50 L100 150 M50 75 L150 125 M50 125 L150 75"/>
+  </g>
+</svg>

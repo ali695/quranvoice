@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { AccountSettings } from '@/components/settings/AccountSettings';
 import { AppearanceSettings } from '@/components/settings/AppearanceSettings';
 import { AudioSettings } from '@/components/settings/AudioSettings';
+import { LanguageSettings } from '@/components/settings/LanguageSettings';
 import { MemorizationSettings } from '@/components/settings/MemorizationSettings';
 import { ReadingSettings } from '@/components/settings/ReadingSettings';
 import { TafsirSettings } from '@/components/settings/TafsirSettings';
@@ -24,6 +25,7 @@ export default function SettingsPage() {
       />
       <AppShell>
         <div className="flex flex-col gap-5">
+          <LanguageSettings />
           <ReadingSettings />
           <TranslationSettings />
           <TafsirSettings />

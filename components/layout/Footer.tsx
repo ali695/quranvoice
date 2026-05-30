@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import { Logo } from '@/components/ui/Logo';
+import { LanguageSelector } from '@/components/layout/LanguageSelector';
 import { FOOTER_LINKS } from '@/lib/data/footerLinks';
 
 const COLUMNS: { title: string; key: keyof typeof FOOTER_LINKS }[] = [
@@ -76,14 +77,7 @@ export function Footer() {
 
             <div className="flex flex-wrap items-center gap-3">
               {/* Language selector */}
-              <button
-                type="button"
-                className="inline-flex h-9 items-center gap-2 rounded-lg border border-ink-600 bg-ink-800/60 px-3 text-xs text-cream-100/80 hover:border-gold-500/40"
-              >
-                <Icon name="globe" size={14} />
-                English
-                <Icon name="chevron-down" size={12} />
-              </button>
+              <LanguageSelector variant="full" />
               {/* Theme selector */}
               <button
                 type="button"

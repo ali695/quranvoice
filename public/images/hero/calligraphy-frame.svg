@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 220" role="img" aria-label="Calligraphy-style decorative frame">
+  <defs>
+    <linearGradient id="hg" x1="0" x2="1">
+      <stop offset="0" stop-color="rgba(212,165,116,0.0)"/>
+      <stop offset="0.5" stop-color="rgba(212,165,116,0.6)"/>
+      <stop offset="1" stop-color="rgba(212,165,116,0.0)"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="220" fill="#0a0e1a"/>
+  <g fill="none" stroke="url(#hg)" stroke-width="1">
+    <path d="M30 110 H570" />
+    <path d="M30 90 H570" />
+    <path d="M30 130 H570" />
+  </g>
+  <g fill="none" stroke="rgba(212,165,116,0.55)" stroke-width="1">
+    <circle cx="300" cy="110" r="44"/>
+    <circle cx="300" cy="110" r="32"/>
+    <circle cx="300" cy="110" r="20"/>
+    <path d="M256 110 L344 110 M300 66 L300 154 M268 78 L332 142 M332 78 L268 142"/>
+  </g>
+</svg>

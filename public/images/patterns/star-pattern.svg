@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Islamic geometric star pattern">
+  <defs>
+    <radialGradient id="g" cx="0.5" cy="0.5" r="0.6">
+      <stop offset="0" stop-color="rgba(212,165,116,0.4)"/>
+      <stop offset="1" stop-color="rgba(212,165,116,0.0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="200" height="200" fill="#0a0e1a"/>
+  <circle cx="100" cy="100" r="90" fill="url(#g)"/>
+  <g fill="none" stroke="rgba(212,165,116,0.55)" stroke-width="0.75">
+    <circle cx="100" cy="100" r="80"/>
+    <circle cx="100" cy="100" r="60"/>
+    <circle cx="100" cy="100" r="40"/>
+    <path d="M100 20 L100 180 M20 100 L180 100"/>
+    <path d="M40 40 L160 160 M160 40 L40 160"/>
+    <path d="M100 20 L130 90 L180 100 L130 110 L100 180 L70 110 L20 100 L70 90 Z"/>
+  </g>
+</svg>

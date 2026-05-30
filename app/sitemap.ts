@@ -1,8 +1,14 @@
 import type { MetadataRoute } from 'next';
+import { APP_BASE_URL } from '@/lib/i18n/hreflang';
+import { getLocalizedPath } from '@/lib/i18n/config';
+import { DEFAULT_LOCALE, LOCALES, type LocaleCode } from '@/lib/i18n/locales';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://quranvoice.app';
-
-const STATIC: string[] = [
+/**
+ * Pages safe to index, in their canonical (un-prefixed) form.
+ * Each gets one sitemap entry per locale, with `alternates.languages`
+ * so search engines can serve the right language to the right user.
+ */
+const INDEXABLE_PATHS: string[] = [
   '/',
   '/quran',
   '/surahs',
@@ -21,6 +27,7 @@ const STATIC: string[] = [
   '/word-by-word',
   '/asbab-al-nuzul',
   '/shan-e-nuzul',
+  '/shan-e-nuzool',
   '/memorization',
   '/memorization/review',
   '/collections',
@@ -59,15 +66,37 @@ const STATIC: string[] = [
   '/copyright',
   '/accessibility',
   '/sitemap',
+  '/sources',
+  '/sources/shan-e-nuzool',
+  '/mushaf',
+  '/tajweed-quran',
+  '/uthmani-quran',
+  '/8-line-quran',
+  '/12-line-quran',
+  '/16-line-quran',
 ];
 
+function buildLanguageAlternates(path: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const l of LOCALES) {
+    out[l.hreflang] = `${APP_BASE_URL}${getLocalizedPath(l.code as LocaleCode, path)}`;
+  }
+  out['x-default'] = `${APP_BASE_URL}${getLocalizedPath(DEFAULT_LOCALE, path)}`;
+  return out;
+}
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const surahs = Array.from({ length: 114 }, (_, i) => `/quran/${i + 1}`);
-  const juz = Array.from({ length: 30 }, (_, i) => `/juz/${i + 1}`);
-  return [...STATIC, ...surahs, ...juz].map((path) => ({
-    url: `${APP_URL}${path}`,
-    lastModified: new Date(),
+  const surahPaths = Array.from({ length: 114 }, (_, i) => `/quran/${i + 1}`);
+  const juzPaths = Array.from({ length: 30 }, (_, i) => `/juz/${i + 1}`);
+
+  const allPaths = [...INDEXABLE_PATHS, ...surahPaths, ...juzPaths];
+  const now = new Date();
+
+  return allPaths.map((path) => ({
+    url: `${APP_BASE_URL}${getLocalizedPath(DEFAULT_LOCALE, path)}`,
+    lastModified: now,
     changeFrequency: 'weekly',
-    priority: path === '/' ? 1 : 0.7,
+    priority: path === '/' ? 1 : path.startsWith('/quran/') ? 0.8 : 0.7,
+    alternates: { languages: buildLanguageAlternates(path) },
   }));
 }

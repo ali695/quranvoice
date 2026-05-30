@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Icon } from '@/components/ui/Icon';
 import { Logo } from '@/components/ui/Logo';
 import { NAV_LINKS } from '@/lib/data/navLinks';
+import { LanguageSelector } from './LanguageSelector';
 import { MobileNav } from './MobileNav';
 
 export function Header() {
@@ -59,15 +60,9 @@ export function Header() {
             >
               <Icon name="search" size={18} />
             </Link>
-            <button
-              type="button"
-              className="hidden h-10 items-center gap-1.5 rounded-lg px-2.5 text-sm text-cream-100/80 transition-colors hover:bg-ink-800/70 hover:text-gold-300 sm:flex"
-              aria-label="Select language"
-            >
-              <Icon name="globe" size={16} />
-              <span className="text-xs font-medium">EN</span>
-              <Icon name="chevron-down" size={14} />
-            </button>
+            <span className="hidden sm:inline-flex">
+              <LanguageSelector variant="compact" />
+            </span>
             <Link
               href="/settings"
               className="hidden h-10 w-10 items-center justify-center rounded-lg text-cream-100/80 transition-colors hover:bg-ink-800/70 hover:text-gold-300 sm:flex"

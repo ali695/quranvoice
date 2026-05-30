@@ -5,7 +5,11 @@ import { AudioPlayerProvider } from '@/components/audio/AudioPlayerProvider';
 import { MiniAudioPlayer } from '@/components/audio/MiniAudioPlayer';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
+import { HreflangLinks } from '@/components/layout/HreflangLinks';
 import { SuppressExtensionWarnings } from '@/components/layout/SuppressExtensionWarnings';
+import { LocaleProvider } from '@/lib/i18n/context';
+import { getLocaleDirection } from '@/lib/i18n/locales';
+import { getCurrentLocale } from '@/lib/i18n/server';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -73,13 +77,21 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getCurrentLocale();
+  const dir = getLocaleDirection(locale);
+
   return (
     <html
-      lang="en"
+      lang={locale}
+      dir={dir}
       className={`${inter.variable} ${cormorant.variable} ${amiri.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        {/* hreflang alternates for every supported locale */}
+        <HreflangLinks />
+      </head>
       <body
         className="min-h-screen bg-ink-900 text-cream-100 antialiased"
         // Browser extensions (e.g. Bitdefender TrafficLight, Grammarly,
@@ -96,14 +108,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
         <SuppressExtensionWarnings />
-        <AudioPlayerProvider>
-          <Header />
-          <main id="main" className="relative pb-24">
-            {children}
-          </main>
-          <Footer />
-          <MiniAudioPlayer />
-        </AudioPlayerProvider>
+        <LocaleProvider initialLocale={locale}>
+          <AudioPlayerProvider>
+            <Header />
+            <main id="main" className="relative pb-24">
+              {children}
+            </main>
+            <Footer />
+            <MiniAudioPlayer />
+          </AudioPlayerProvider>
+        </LocaleProvider>
       </body>
     </html>
   );
