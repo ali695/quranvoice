@@ -1,0 +1,240 @@
+/**
+ * Quranic Duas — supplications that appear directly in the Quran.
+ *
+ * Each entry stores only the verse reference (and a short situation
+ * description). The actual Arabic text + translation render at request
+ * time from Quran.Foundation (or AlQuran Cloud fallback) so the wording
+ * stays source-accurate. We never paste Quranic text into source code.
+ */
+
+import type { LearningItem } from '@/lib/types/learning';
+import { quranRef } from './sources';
+
+export type DuaCategory =
+  | 'forgiveness'
+  | 'guidance'
+  | 'patience'
+  | 'protection'
+  | 'family'
+  | 'knowledge'
+  | 'mercy'
+  | 'gratitude'
+  | 'difficulty';
+
+export interface QuranicDua extends LearningItem {
+  verseKey: string;
+  category: DuaCategory;
+  context: string;
+}
+
+export const QURANIC_DUAS: QuranicDua[] = [
+  {
+    id: 'dua-fatihah',
+    slug: 'dua-fatihah',
+    type: 'dua',
+    title: 'Guide us to the straight path',
+    verseKey: '1:6',
+    category: 'guidance',
+    context: 'The central petition of Surah Al-Fatihah, recited in every prayer.',
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('1:6')],
+    relatedVerseKeys: ['1:6', '1:7'],
+    tags: ['guidance'],
+  },
+  {
+    id: 'dua-2-201',
+    slug: 'good-in-this-world-and-next',
+    type: 'dua',
+    title: 'Good in this world and the next',
+    verseKey: '2:201',
+    category: 'mercy',
+    context: 'A short, complete dua taught in the Quran for goodness in both lives.',
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('2:201')],
+    relatedVerseKeys: ['2:201'],
+    tags: ['mercy', 'gratitude'],
+  },
+  {
+    id: 'dua-2-286',
+    slug: 'lord-do-not-burden-us',
+    type: 'dua',
+    title: 'Do not burden us beyond what we can bear',
+    verseKey: '2:286',
+    category: 'difficulty',
+    context: 'The closing dua of Surah Al-Baqarah, asking for ease and pardon.',
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('2:285'), quranRef('2:286')],
+    relatedVerseKeys: ['2:285', '2:286'],
+    tags: ['patience', 'difficulty'],
+  },
+  {
+    id: 'dua-3-8',
+    slug: 'do-not-let-hearts-deviate',
+    type: 'dua',
+    title: 'Do not let our hearts deviate',
+    verseKey: '3:8',
+    category: 'guidance',
+    context: 'A dua for steadfastness after Allah has guided us.',
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('3:8'), quranRef('3:9')],
+    relatedVerseKeys: ['3:8', '3:9'],
+    tags: ['guidance'],
+  },
+  {
+    id: 'dua-7-23',
+    slug: 'adam-prayer-for-forgiveness',
+    type: 'dua',
+    title: 'We have wronged ourselves — forgive us',
+    verseKey: '7:23',
+    category: 'forgiveness',
+    context: "Prophet Adam's ﷺ supplication after his lapse, preserved as a model dua.",
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('7:23')],
+    relatedVerseKeys: ['7:23'],
+    tags: ['forgiveness'],
+  },
+  {
+    id: 'dua-17-80',
+    slug: 'entry-and-exit-with-truth',
+    type: 'dua',
+    title: 'Make my entry and exit with truth',
+    verseKey: '17:80',
+    category: 'protection',
+    context: 'A dua for sincerity in every coming and going.',
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('17:80')],
+    relatedVerseKeys: ['17:80'],
+    tags: ['protection'],
+  },
+  {
+    id: 'dua-20-114',
+    slug: 'increase-me-in-knowledge',
+    type: 'dua',
+    title: 'My Lord, increase me in knowledge',
+    verseKey: '20:114',
+    category: 'knowledge',
+    context: 'A short dua of immense weight, taught to the Prophet ﷺ.',
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('20:114')],
+    relatedVerseKeys: ['20:114'],
+    tags: ['knowledge'],
+  },
+  {
+    id: 'dua-23-118',
+    slug: 'forgive-and-have-mercy',
+    type: 'dua',
+    title: 'Forgive us and have mercy on us',
+    verseKey: '23:118',
+    category: 'mercy',
+    context: 'The closing dua of Surah Al-Muʾminūn.',
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('23:118')],
+    relatedVerseKeys: ['23:118'],
+    tags: ['forgiveness', 'mercy'],
+  },
+  {
+    id: 'dua-25-74',
+    slug: 'family-as-coolness-of-eyes',
+    type: 'dua',
+    title: 'Coolness of our eyes from our spouses and children',
+    verseKey: '25:74',
+    category: 'family',
+    context: 'A dua of the devoted servants of the Most Merciful in Surah Al-Furqān.',
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('25:74')],
+    relatedVerseKeys: ['25:74'],
+    tags: ['family'],
+  },
+  {
+    id: 'dua-46-15',
+    slug: 'gratitude-for-parents',
+    type: 'dua',
+    title: 'Enable me to be grateful and to act righteously',
+    verseKey: '46:15',
+    category: 'gratitude',
+    context: 'A dua at maturity — gratitude for parents and a request for righteous descendants.',
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('46:15')],
+    relatedVerseKeys: ['46:15'],
+    tags: ['gratitude', 'family'],
+  },
+  {
+    id: 'dua-66-8',
+    slug: 'perfect-our-light',
+    type: 'dua',
+    title: 'Perfect our light and forgive us',
+    verseKey: '66:8',
+    category: 'forgiveness',
+    context: 'A dua of believers on the Day of Judgement.',
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('66:8')],
+    relatedVerseKeys: ['66:8'],
+    tags: ['forgiveness', 'mercy'],
+  },
+  {
+    id: 'dua-113-1',
+    slug: 'seeking-refuge-falaq',
+    type: 'dua',
+    title: "Seeking refuge in the Lord of the daybreak",
+    verseKey: '113:1',
+    category: 'protection',
+    context: 'Surah Al-Falaq — a Quranic refuge.',
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('113:1')],
+    relatedVerseKeys: ['113:1', '113:2', '113:3', '113:4', '113:5'],
+    relatedSurahs: [113],
+    tags: ['protection'],
+  },
+  {
+    id: 'dua-114-1',
+    slug: 'seeking-refuge-nas',
+    type: 'dua',
+    title: 'Seeking refuge in the Lord of mankind',
+    verseKey: '114:1',
+    category: 'protection',
+    context: 'Surah An-Nās — the closing Quranic refuge.',
+    language: 'en',
+    sourceStatus: 'verified',
+    reviewStatus: 'approved',
+    sourceRefs: [quranRef('114:1')],
+    relatedVerseKeys: ['114:1', '114:2', '114:3', '114:4', '114:5', '114:6'],
+    relatedSurahs: [114],
+    tags: ['protection'],
+  },
+];
+
+export const DUA_CATEGORIES: Array<{ slug: DuaCategory; label: string }> = [
+  { slug: 'guidance', label: 'Guidance' },
+  { slug: 'forgiveness', label: 'Forgiveness' },
+  { slug: 'mercy', label: 'Mercy' },
+  { slug: 'protection', label: 'Protection' },
+  { slug: 'family', label: 'Family' },
+  { slug: 'knowledge', label: 'Knowledge' },
+  { slug: 'patience', label: 'Patience' },
+  { slug: 'difficulty', label: 'Hardship' },
+  { slug: 'gratitude', label: 'Gratitude' },
+];
