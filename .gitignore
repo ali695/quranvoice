@@ -1,0 +1,45 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Next.js build
+.next
+out
+build
+dist
+
+# Misc
+.DS_Store
+*.pem
+.vscode/*.log
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Env — never commit real secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Coverage / cache
+coverage
+.cache
+.turbo
+
+# OS
+Thumbs.db
+
+# Editor
+.idea
+.vscode/settings.json
+
+# Claude Code local state (per-user permissions, transcripts, etc.)
+.claude/settings.local.json
+.claude/sessions
+.claude/transcripts

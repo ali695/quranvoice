@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg: 10 14 26;
+    --color-surface: 17 23 41;
+    --color-border: 37 43 68;
+    --color-gold: 212 165 116;
+    --color-cream: 245 240 232;
+  }
+
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: rgb(var(--color-bg));
+    color: #e8e6e1;
+    font-family: var(--font-inter), system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    outline: 2px solid rgb(var(--color-gold));
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: rgba(212, 165, 116, 0.3);
+    color: #fff;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0a0e1a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #252b44;
+    border-radius: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #323a55;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .arabic {
+    font-family: var(--font-amiri), 'Amiri', 'Scheherazade New', serif;
+    direction: rtl;
+    line-height: 1.9;
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #e9c188 0%, #d4a574 50%, #bd8a52 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .geometric-bg {
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(212, 165, 116, 0.08) 1px, transparent 0);
+    background-size: 32px 32px;
+  }
+
+  .card-elevated {
+    @apply rounded-2xl border border-ink-600/60 bg-ink-800/60 backdrop-blur-sm;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.04) inset,
+      0 1px 3px rgba(0, 0, 0, 0.3),
+      0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  }
+
+  .card-cream {
+    background: linear-gradient(180deg, #f9f5ee 0%, #f5f0e8 100%);
+    color: #2a2419;
+  }
+
+  .divider-gold {
+    background: linear-gradient(90deg, transparent, rgba(212, 165, 116, 0.5), transparent);
+    height: 1px;
+  }
+
+  /* Islamic geometric pattern overlay */
+  .pattern-ornament {
+    background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23d4a574' stroke-opacity='0.06' stroke-width='1'%3E%3Cpath d='M40 0 L40 80 M0 40 L80 40 M0 0 L80 80 M80 0 L0 80'/%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3Ccircle cx='40' cy='40' r='30'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .pattern-stars {
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4a574' fill-opacity='0.04'%3E%3Cpath d='M20 4 L23 16 L36 16 L26 23 L29 36 L20 28 L11 36 L14 23 L4 16 L17 16 Z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Decorative Bismillah-style flourish (geometric, not actual calligraphy) */
+  .ornament-line::before,
+  .ornament-line::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212, 165, 116, 0.4), transparent);
+  }
+  .ornament-line {
+    @apply flex items-center gap-4;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

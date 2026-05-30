@@ -1,0 +1,73 @@
+import type { MetadataRoute } from 'next';
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://quranvoice.app';
+
+const STATIC: string[] = [
+  '/',
+  '/quran',
+  '/surahs',
+  '/juz',
+  '/pages',
+  '/search',
+  '/topics',
+  '/translations',
+  '/tafsir',
+  '/recitations',
+  '/reciters',
+  '/audio',
+  '/ayah-of-the-day',
+  '/quran-in-a-year',
+  '/study',
+  '/word-by-word',
+  '/asbab-al-nuzul',
+  '/shan-e-nuzul',
+  '/memorization',
+  '/memorization/review',
+  '/collections',
+  '/bookmarks',
+  '/notes',
+  '/goals',
+  '/progress',
+  '/tools',
+  '/tools/prayer-times',
+  '/tools/qibla',
+  '/tools/hijri-calendar',
+  '/tools/reading-tracker',
+  '/tools/memorization-tracker',
+  '/tools/share-ayah',
+  '/learn',
+  '/learn/beginner-quran-guide',
+  '/learn/tajweed-basics',
+  '/learn/names-of-allah',
+  '/learn/duas',
+  '/learn/stories-of-the-prophets',
+  '/learn/daily-reflection',
+  '/learn/articles',
+  '/profile',
+  '/settings',
+  '/auth/sign-in',
+  '/auth/sign-up',
+  '/about',
+  '/contact',
+  '/help',
+  '/feedback',
+  '/developers',
+  '/api-docs',
+  '/privacy',
+  '/terms',
+  '/disclaimer',
+  '/copyright',
+  '/accessibility',
+  '/sitemap',
+];
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const surahs = Array.from({ length: 114 }, (_, i) => `/quran/${i + 1}`);
+  const juz = Array.from({ length: 30 }, (_, i) => `/juz/${i + 1}`);
+  return [...STATIC, ...surahs, ...juz].map((path) => ({
+    url: `${APP_URL}${path}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: path === '/' ? 1 : 0.7,
+  }));
+}
