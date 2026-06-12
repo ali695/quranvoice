@@ -15,19 +15,23 @@ interface AyahActionsProps {
 }
 
 export function AyahActions({ surah, ayah, arabic, surahLabel }: AyahActionsProps) {
-  const { playSurah, isPlaying, now, toggle } = useAudioPlayer();
+  const { playAyah, playFromHere, isPlaying, now, toggle } = useAudioPlayer();
   const [notesOpen, setNotesOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const isCurrent = now?.surah === surah && now?.ayah === ayah;
 
+  // Play THIS exact ayah (not the surah from the start).
   const onPlay = () => {
     if (isCurrent) {
       toggle();
     } else {
-      playSurah(surah, surahLabel, ayah);
+      playAyah(surah, ayah, surahLabel);
     }
   };
+
+  // Start a continuous queue from this ayah to the end of the surah.
+  const onPlayFromHere = () => playFromHere(surah, ayah, surahLabel);
 
   const onCopy = async () => {
     const text = `${arabic}\n— Quran ${surah}:${ayah}`;
@@ -75,6 +79,15 @@ export function AyahActions({ surah, ayah, arabic, surahLabel }: AyahActionsProp
           )}
         >
           <Icon name={isCurrent && isPlaying ? 'pause' : 'play'} size={14} />
+        </button>
+        <button
+          type="button"
+          onClick={onPlayFromHere}
+          aria-label="Play from this ayah to the end of the surah"
+          title="Play from here"
+          className="flex h-9 w-9 items-center justify-center rounded-lg text-cream-200/65 transition-colors hover:bg-ink-700/60 hover:text-gold-300"
+        >
+          <Icon name="arrow-right" size={14} />
         </button>
         <BookmarkButton surah={surah} ayah={ayah} />
         <button

@@ -9,8 +9,9 @@ export function RelatedAyahs({ related = [] }: RelatedAyahsProps) {
   if (related.length === 0) {
     return (
       <UnavailableState
-        title="Related ayahs not connected"
-        description="When a verified concept/topic index is connected, related verses will appear here."
+        title="Related ayahs"
+        badge="Awaiting verified index"
+        description="Related ayah mapping will appear here after a verified topic index is connected. QuranVoice does not generate related-verse links automatically."
       />
     );
   }

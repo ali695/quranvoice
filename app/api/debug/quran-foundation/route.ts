@@ -114,6 +114,64 @@ export async function GET(req: Request) {
       ok: Boolean(audioOk?.audio_file?.audio_url),
       detail: audioOk?.audio_file?.audio_url ? 'audio_url returned' : 'no audio data',
     });
+
+    // Per-ayah audio probe (recitation 7, verse 2:255).
+    const ayahAudio = await foundationFetch<{ audio_files?: Array<{ url?: string }> }>(
+      F.ayahAudioForVerse(7, '2:255'),
+    );
+    probes.push({
+      label: 'per-ayah audio (recitation 7, 2:255)',
+      ok: Boolean(ayahAudio?.audio_files?.[0]?.url),
+      detail: ayahAudio?.audio_files?.[0]?.url ? 'exact-ayah url returned' : 'no per-ayah data',
+    });
+
+    // ── Word-by-word + script-field probe for 2:255 ──────────────────
+    const probe = await foundationFetch<{
+      verse?: {
+        text_uthmani?: string;
+        text_uthmani_simple?: string;
+        text_imlaei?: string;
+        text_uthmani_tajweed?: string;
+        page_number?: number;
+        words?: Array<{
+          char_type_name?: string;
+          text_uthmani?: string;
+          translation?: { text?: string } | null;
+          transliteration?: { text?: string } | null;
+        }>;
+      };
+    }>(F.verseCapabilityProbe('2:255'));
+    const v = probe?.verse;
+    const words = (v?.words ?? []).filter((w) => (w.char_type_name ?? 'word') === 'word');
+    probes.push({
+      label: 'word-by-word (2:255)',
+      ok: words.length > 0,
+      detail: words.length
+        ? `${words.length} words` +
+          `${words.some((w) => w.translation?.text) ? ' +translation' : ''}` +
+          `${words.some((w) => w.transliteration?.text) ? ' +transliteration' : ''}`
+        : 'no word data',
+    });
+    probes.push({
+      label: 'tajweed field (text_uthmani_tajweed, 2:255)',
+      ok: Boolean(v?.text_uthmani_tajweed),
+      detail: v?.text_uthmani_tajweed ? 'tajweed markup returned' : 'absent',
+    });
+    probes.push({
+      label: 'imlaei field (text_imlaei, 2:255)',
+      ok: Boolean(v?.text_imlaei),
+      detail: v?.text_imlaei ? 'present' : 'absent',
+    });
+    probes.push({
+      label: 'simplified uthmani (text_uthmani_simple, 2:255)',
+      ok: Boolean(v?.text_uthmani_simple),
+      detail: v?.text_uthmani_simple ? 'present' : 'absent',
+    });
+    probes.push({
+      label: 'mushaf page metadata (page_number, 2:255)',
+      ok: typeof v?.page_number === 'number',
+      detail: typeof v?.page_number === 'number' ? `page ${v.page_number}` : 'absent',
+    });
   }
 
   // ── 5. Search scope ────────────────────────────────────────────────

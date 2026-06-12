@@ -1,13 +1,15 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAudioPlayer } from '@/components/audio/AudioPlayerProvider';
-import type { Ayah } from '@/lib/types/quran';
+import type { Ayah, WordToken } from '@/lib/types/quran';
 import type { TranslationVerse } from '@/lib/types/translation';
 import { cn } from '@/lib/utils/cn';
+import { Icon } from '@/components/ui/Icon';
 import { AyahActions } from './AyahActions';
 import { NowRecitingBadge } from './NowRecitingBadge';
 import { TranslationBlock } from './TranslationBlock';
+import { WordByWordBlock } from './WordByWordBlock';
 
 interface AyahCardProps {
   ayah: Ayah;
@@ -20,6 +22,8 @@ interface AyahCardProps {
   arabicFontSize?: number;
   /** True when audio settings have auto-scroll-with-audio enabled */
   autoScrollWithAudio?: boolean;
+  /** Show the word-by-word toggle (reading setting + source capability). */
+  wordByWordEnabled?: boolean;
 }
 
 export function AyahCard({
@@ -30,10 +34,42 @@ export function AyahCard({
   showTranslation = true,
   arabicFontSize = 32,
   autoScrollWithAudio = true,
+  wordByWordEnabled = false,
 }: AyahCardProps) {
-  const { now } = useAudioPlayer();
+  const { now, notice } = useAudioPlayer();
   const isPlaying = now?.surah === ayah.surahNumber && now?.ayah === ayah.ayahNumber;
+  const showNotice = isPlaying && Boolean(notice);
   const rootRef = useRef<HTMLDivElement>(null);
+
+  // Lazy word-by-word: only fetched when the reader opens this ayah's panel.
+  const [wordsOpen, setWordsOpen] = useState(false);
+  const [words, setWords] = useState<WordToken[] | null>(null);
+  const [wordsLoading, setWordsLoading] = useState(false);
+  const [wordsLoaded, setWordsLoaded] = useState(false);
+
+  const loadWords = useCallback(async () => {
+    setWordsLoading(true);
+    try {
+      const res = await fetch(`/api/quran/verses/by-key/${ayah.verseKey}/words`);
+      if (res.ok) {
+        const json = (await res.json()) as { data?: WordToken[] };
+        setWords(json.data ?? null);
+      } else {
+        setWords(null);
+      }
+    } catch {
+      setWords(null);
+    } finally {
+      setWordsLoading(false);
+      setWordsLoaded(true);
+    }
+  }, [ayah.verseKey]);
+
+  const toggleWords = () => {
+    const next = !wordsOpen;
+    setWordsOpen(next);
+    if (next && !wordsLoaded) void loadWords();
+  };
 
   // Scroll into view when the URL anchor selects this ayah.
   useEffect(() => {
@@ -113,7 +149,28 @@ export function AyahCard({
         </p>
       </div>
 
+      {showNotice && (
+        <p className="mt-4 rounded-lg border border-gold-500/25 bg-gold-500/5 px-3 py-2 text-xs text-gold-200/90">
+          {notice}
+        </p>
+      )}
+
       {showTranslation && <TranslationBlock translations={translations} />}
+
+      {wordByWordEnabled && (
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={toggleWords}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-ink-600/70 px-3 py-1.5 text-xs font-medium text-cream-200/80 hover:border-gold-500/40 hover:text-gold-300"
+            aria-expanded={wordsOpen}
+          >
+            <Icon name={wordsOpen ? 'chevron-down' : 'chevron-right'} size={12} />
+            {wordsOpen ? 'Hide words' : 'Word by word'}
+          </button>
+          {wordsOpen && <WordByWordBlock words={words ?? undefined} loading={wordsLoading} />}
+        </div>
+      )}
     </article>
   );
 }

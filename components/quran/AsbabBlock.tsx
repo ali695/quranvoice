@@ -9,8 +9,9 @@ export function AsbabBlock({ entries }: AsbabBlockProps) {
   if (!entries || entries.length === 0) {
     return (
       <UnavailableState
-        title="No verified Asbab al-Nuzul for this ayah"
-        description="QuranVoice only displays Asbab/Shan-e-Nuzul entries from verified, license-checked sources. Until a verified entry is registered for this ayah, nothing is shown here."
+        title="No reviewed Asbab al-Nuzul entry for this ayah yet"
+        badge="Awaiting reviewed source"
+        description="QuranVoice only displays Asbab / Shan-e-Nuzool after source review. A reviewed entry for this ayah has not been published yet — this is not an error, and nothing unverified is ever shown."
       />
     );
   }

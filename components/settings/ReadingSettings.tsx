@@ -1,15 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { Select } from '@/components/ui/Select';
 import {
-  LINE_STYLES,
-  MUSHAF_STYLES,
-  QURAN_SCRIPTS,
-  TAJWEED_CAPABILITY,
+  buildLineStyles,
+  buildMushafStyles,
+  buildQuranScripts,
+  buildTajweedCapability,
 } from '@/lib/data/mushafCapabilities';
+import { useCapabilities } from '@/lib/hooks/useCapabilities';
 import { loadSettings, updateSettings } from '@/lib/services/settingsService';
 import type { ReadingSettings as RS } from '@/lib/types/settings';
 
@@ -29,8 +30,15 @@ const MODE_OPTIONS = [
 
 export function ReadingSettings() {
   const [s, setS] = useState<RS | null>(null);
+  const { capabilities, loading } = useCapabilities();
 
   useEffect(() => setS(loadSettings().reading), []);
+
+  const scripts = useMemo(() => buildQuranScripts(capabilities), [capabilities]);
+  const mushafStyles = useMemo(() => buildMushafStyles(capabilities), [capabilities]);
+  const lineStyles = useMemo(() => buildLineStyles(capabilities), [capabilities]);
+  const tajweed = useMemo(() => buildTajweedCapability(capabilities), [capabilities]);
+
   if (!s) return null;
 
   const onSave = (patch: Partial<RS>) => {
@@ -40,10 +48,15 @@ export function ReadingSettings() {
 
   return (
     <Card variant="elevated" className="p-6">
-      <h2 className="font-display text-lg font-medium text-cream-50">Reading</h2>
-      <p className="mt-1 text-sm text-cream-200/65">
-        Script, mushaf style, fonts, and what to show under every ayah.
-      </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="font-display text-lg font-medium text-cream-50">Reading</h2>
+          <p className="mt-1 text-sm text-cream-200/65">
+            Script, mushaf style, fonts, and what to show under every ayah.
+          </p>
+        </div>
+        <SourceStatus loading={loading} provider={capabilities?.provider ?? null} />
+      </div>
 
       {/* ── Script + Mushaf ───────────────────────────────── */}
       <fieldset className="mt-5">
@@ -54,19 +67,19 @@ export function ReadingSettings() {
           <CapabilitySelect
             label="Quran script"
             value={s.script}
-            options={QURAN_SCRIPTS.map((o) => ({ value: o.value, label: o.label, enabled: o.enabled, reason: o.reason }))}
+            options={scripts.map((o) => ({ value: o.value, label: o.label, enabled: o.enabled, reason: o.reason }))}
             onChange={(v) => onSave({ script: v as RS['script'] })}
           />
           <CapabilitySelect
             label="Mushaf style"
             value={s.mushafStyle}
-            options={MUSHAF_STYLES.map((o) => ({ value: o.value, label: o.label, enabled: o.enabled, reason: o.reason }))}
+            options={mushafStyles.map((o) => ({ value: o.value, label: o.label, enabled: o.enabled, reason: o.reason }))}
             onChange={(v) => onSave({ mushafStyle: v as RS['mushafStyle'] })}
           />
           <CapabilitySelect
             label="Line style"
             value={s.lineStyle}
-            options={LINE_STYLES.map((o) => ({ value: o.value, label: o.label, enabled: o.enabled, reason: o.reason }))}
+            options={lineStyles.map((o) => ({ value: o.value, label: o.label, enabled: o.enabled, reason: o.reason }))}
             onChange={(v) => onSave({ lineStyle: v as RS['lineStyle'] })}
           />
           <Select
@@ -79,27 +92,27 @@ export function ReadingSettings() {
 
         <label
           className={`mt-4 flex items-start gap-3 rounded-xl border p-4 text-sm ${
-            TAJWEED_CAPABILITY.enabled
+            tajweed.enabled
               ? 'border-ink-700/60 bg-ink-850/60 text-cream-100/90'
               : 'border-ink-700/60 bg-ink-850/40 text-cream-200/55'
           }`}
         >
           <input
             type="checkbox"
-            checked={s.tajweedMode && TAJWEED_CAPABILITY.enabled}
-            disabled={!TAJWEED_CAPABILITY.enabled}
+            checked={s.tajweedMode && tajweed.enabled}
+            disabled={!tajweed.enabled}
             onChange={(e) => onSave({ tajweedMode: e.target.checked })}
             className="mt-0.5 h-4 w-4 accent-gold-500 disabled:opacity-50"
           />
           <span>
             <span className="font-medium text-cream-50">Tajweed mode</span>
             <span className="ml-2 text-xs text-cream-200/55">
-              Color-coded Tajweed rules.
+              {tajweed.enabled
+                ? 'Color-coded Tajweed rules from the active source.'
+                : 'Color-coded Tajweed rules.'}
             </span>
-            {!TAJWEED_CAPABILITY.enabled && (
-              <span className="mt-1 block text-xs text-gold-300/90">
-                {TAJWEED_CAPABILITY.reason}
-              </span>
+            {!tajweed.enabled && tajweed.reason && (
+              <span className="mt-1 block text-xs text-gold-300/90">{tajweed.reason}</span>
             )}
           </span>
         </label>
@@ -231,7 +244,7 @@ function CapabilitySelect({
         {options.map((o) => (
           <option key={o.value} value={o.value} disabled={!o.enabled} className="bg-ink-900 text-cream-50">
             {o.label}
-            {!o.enabled ? ' (locked)' : ''}
+            {!o.enabled ? ' — unavailable' : ''}
           </option>
         ))}
       </select>
@@ -242,5 +255,42 @@ function CapabilitySelect({
         </div>
       )}
     </div>
+  );
+}
+
+function SourceStatus({
+  loading,
+  provider,
+}: {
+  loading: boolean;
+  provider: 'foundation' | 'alquran-cloud' | 'none' | null;
+}) {
+  if (loading) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-ink-600/60 bg-ink-850/60 px-3 py-1 text-[10px] uppercase tracking-wider text-cream-200/55">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold-400/70" />
+        Checking source…
+      </span>
+    );
+  }
+  const label =
+    provider === 'foundation'
+      ? 'Quran.Foundation'
+      : provider === 'alquran-cloud'
+        ? 'AlQuran Cloud'
+        : 'No source';
+  const ok = provider === 'foundation' || provider === 'alquran-cloud';
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] uppercase tracking-wider ${
+        ok
+          ? 'border-gold-500/30 bg-gold-500/5 text-gold-200/90'
+          : 'border-ink-600/60 bg-ink-850/60 text-cream-200/55'
+      }`}
+      title="Capabilities are detected live from the active content source"
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${ok ? 'bg-gold-400' : 'bg-cream-200/40'}`} />
+      {label}
+    </span>
   );
 }

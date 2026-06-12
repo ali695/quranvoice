@@ -21,6 +21,24 @@ export const F = {
   /** GET — single verse by verse_key like "2:255" */
   verseByKey: (verseKey: string, qs = '') =>
     `${FOUNDATION_BASE_PATH}/verses/by_key/${encodeURIComponent(verseKey)}${qs ? `?${qs}` : ''}`,
+  /**
+   * GET — capability probe for a verse. Requests every script field plus
+   * word-level data so the capability service can detect, from real
+   * responses, which features the active source actually supports.
+   */
+  verseCapabilityProbe: (verseKey: string) =>
+    `${FOUNDATION_BASE_PATH}/verses/by_key/${encodeURIComponent(verseKey)}?` +
+    'fields=text_uthmani,text_uthmani_simple,text_imlaei,text_uthmani_tajweed,page_number&' +
+    'words=true&word_fields=text_uthmani,page_number,line_number',
+  /**
+   * GET — a verse with full word-by-word data (Arabic, transliteration,
+   * translation, root/lemma where the source provides it).
+   */
+  verseWords: (verseKey: string, language = 'en') =>
+    `${FOUNDATION_BASE_PATH}/verses/by_key/${encodeURIComponent(verseKey)}?` +
+    'words=true&' +
+    `word_fields=text_uthmani,text_indopak,transliteration,translation&` +
+    `word_translation_language=${language}&fields=text_uthmani`,
   /** GET — verses of a juz */
   versesByJuz: (juz: number, qs = '') =>
     `${FOUNDATION_BASE_PATH}/verses/by_juz/${juz}${qs ? `?${qs}` : ''}`,

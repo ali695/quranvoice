@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
 import { UnavailableState } from '@/components/ui/ErrorState';
 import { loadSettings, updateSettings } from '@/lib/services/settingsService';
+import { languageName } from '@/lib/utils/languageNames';
 import type { TafsirSettings as TS } from '@/lib/types/settings';
 import type { TafsirResource } from '@/lib/types/tafsir';
 
@@ -37,8 +38,9 @@ export function TafsirSettings() {
       {available.length === 0 ? (
         <div className="mt-5">
           <UnavailableState
-            title="No verified tafsir source connected"
-            description="When a verified tafsir resource is registered in the Resource Registry, you’ll be able to pick a default here."
+            title="No tafsir from the active source"
+            badge="No sources"
+            description="The connected content source returned no tafsir resources. Connect Quran.Foundation to unlock tafsir selection in multiple languages."
           />
         </div>
       ) : (
@@ -46,8 +48,11 @@ export function TafsirSettings() {
           <Select
             label="Default tafsir"
             value={String(s.defaultTafsirId ?? '')}
-            options={[{ value: '', label: 'Auto' }].concat(
-              available.map((t) => ({ value: String(t.id), label: t.name })),
+            options={[{ value: '', label: 'Auto (first available)' }].concat(
+              available.map((t) => ({
+                value: String(t.id),
+                label: `${t.name}${t.language ? ` · ${languageName(t.language)}` : ''}`,
+              })),
             )}
             onChange={(e) => {
               const id = e.target.value || null;

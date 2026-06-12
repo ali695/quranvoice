@@ -3,13 +3,12 @@
 import { useEffect, useState } from 'react';
 import { Tabs } from '@/components/ui/Tabs';
 import { AsbabBlock } from '@/components/quran/AsbabBlock';
-import { TafsirBlock } from '@/components/quran/TafsirBlock';
-import { WordByWordBlock } from '@/components/quran/WordByWordBlock';
 import { MemorizationControls } from './MemorizationControls';
 import { ReflectionPrompt } from './ReflectionPrompt';
 import { RelatedAyahs } from './RelatedAyahs';
+import { TafsirTab } from './TafsirTab';
+import { WordByWordTab } from './WordByWordTab';
 import type { AsbabEntry } from '@/lib/types/asbab';
-import type { TafsirEntry } from '@/lib/types/tafsir';
 
 interface StudyPanelProps {
   surah: number;
@@ -17,23 +16,16 @@ interface StudyPanelProps {
 }
 
 export function StudyPanel({ surah, ayah }: StudyPanelProps) {
-  const [tafsir, setTafsir] = useState<TafsirEntry[] | null>(null);
   const [asbab, setAsbab] = useState<AsbabEntry[]>([]);
 
+  // Asbab is a small Supabase lookup — safe to fetch up front.
   useEffect(() => {
     let cancelled = false;
     async function load() {
       try {
-        const [tRes, aRes] = await Promise.all([
-          fetch(`/api/quran/tafsirs/by-verse/${surah}/${ayah}`),
-          fetch(`/api/asbab/${surah}:${ayah}`),
-        ]);
-        if (tRes.ok) {
-          const json = (await tRes.json()) as { data?: TafsirEntry[] };
-          if (!cancelled) setTafsir(json.data ?? []);
-        }
-        if (aRes.ok) {
-          const json = (await aRes.json()) as { data?: AsbabEntry[] };
+        const res = await fetch(`/api/asbab/${surah}:${ayah}`);
+        if (res.ok) {
+          const json = (await res.json()) as { data?: AsbabEntry[] };
           if (!cancelled) setAsbab(json.data ?? []);
         }
       } catch {
@@ -51,8 +43,8 @@ export function StudyPanel({ surah, ayah }: StudyPanelProps) {
       <Tabs
         defaultId="tafsir"
         items={[
-          { id: 'tafsir', label: 'Tafsir', content: <TafsirBlock entries={tafsir ?? undefined} /> },
-          { id: 'wbw', label: 'Word by word', content: <WordByWordBlock words={undefined} /> },
+          { id: 'tafsir', label: 'Tafsir', content: <TafsirTab surah={surah} ayah={ayah} /> },
+          { id: 'wbw', label: 'Word by word', content: <WordByWordTab surah={surah} ayah={ayah} /> },
           { id: 'asbab', label: 'Asbab al-Nuzul', content: <AsbabBlock entries={asbab} /> },
           { id: 'related', label: 'Related ayahs', content: <RelatedAyahs /> },
         ]}

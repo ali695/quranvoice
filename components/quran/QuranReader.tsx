@@ -6,6 +6,7 @@ import { SettingsDrawer } from '@/components/settings/SettingsDrawer';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { useCapabilities } from '@/lib/hooks/useCapabilities';
 import { recordRead } from '@/lib/services/progressService';
 import { loadSettings } from '@/lib/services/settingsService';
 import type { Ayah, Surah } from '@/lib/types/quran';
@@ -24,9 +25,11 @@ interface QuranReaderProps {
 
 export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: QuranReaderProps) {
   const { playSurah } = useAudioPlayer();
+  const { capabilities } = useCapabilities();
   const [translationsByAyah, setTranslationsByAyah] = useState<Map<number, TranslationVerse[]>>(new Map());
   const [translationLoading, setTranslationLoading] = useState(false);
   const [showTranslation, setShowTranslation] = useState(true);
+  const [showWordByWord, setShowWordByWord] = useState(false);
   const [arabicSize, setArabicSize] = useState(32);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -34,36 +37,53 @@ export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: Qur
   useEffect(() => {
     const s = loadSettings();
     setShowTranslation(s.reading.showTranslation);
+    setShowWordByWord(s.reading.showWordByWord);
     setArabicSize(s.reading.arabicFontSize);
   }, []);
+
+  // Word-by-word is shown only when the reader setting is on AND the active
+  // source actually provides per-word data.
+  const wordByWordEnabled = showWordByWord && Boolean(capabilities?.hasWordByWord);
 
   // Record reading progress when this surah opens (or highlight changes).
   useEffect(() => {
     recordRead(surah.number, highlightAyah ?? 1);
   }, [surah.number, highlightAyah]);
 
-  // Fetch the default translation on mount.
+  // Fetch every selected translation on mount and stack them per ayah.
   useEffect(() => {
     let cancelled = false;
     async function load() {
       const s = loadSettings();
-      const id = (s.translation.selected[0] as string) || 'en.sahih';
+      const ids = (s.translation.selected.length
+        ? s.translation.selected
+        : ['en.sahih']) as Array<string | number>;
       setTranslationLoading(true);
       try {
-        const res = await fetch(
-          `/api/quran/translations/by-chapter/${surah.number}?id=${encodeURIComponent(id)}`,
+        const results = await Promise.all(
+          ids.map(async (id) => {
+            try {
+              const res = await fetch(
+                `/api/quran/translations/by-chapter/${surah.number}?id=${encodeURIComponent(String(id))}`,
+              );
+              if (!res.ok) return null;
+              const json = (await res.json()) as { data?: TranslationVerse[] };
+              return json.data ?? null;
+            } catch {
+              return null;
+            }
+          }),
         );
-        if (!res.ok) {
-          setTranslationLoading(false);
-          return;
-        }
-        const json = (await res.json()) as { data?: TranslationVerse[] };
-        if (cancelled || !json.data) return;
+        if (cancelled) return;
         const map = new Map<number, TranslationVerse[]>();
-        json.data.forEach((t, i) => {
-          const ayahNumber = ayahs[i]?.ayahNumber ?? i + 1;
-          map.set(ayahNumber, [t]);
-        });
+        for (const list of results) {
+          if (!list) continue;
+          list.forEach((t, i) => {
+            const ayahNumber = ayahs[i]?.ayahNumber ?? i + 1;
+            const existing = map.get(ayahNumber) ?? [];
+            map.set(ayahNumber, [...existing, t]);
+          });
+        }
         setTranslationsByAyah(map);
       } catch {
         // Silent: translations are optional.
@@ -152,6 +172,7 @@ export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: Qur
               highlighted={highlightAyah === a.ayahNumber}
               showTranslation={showTranslation}
               arabicFontSize={arabicSize}
+              wordByWordEnabled={wordByWordEnabled}
             />
           </li>
         ))}

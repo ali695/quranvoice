@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { SectionHeader } from '@/components/ui/SectionHeader';
+import { DailyVerseExtras } from '@/components/home/DailyVerseExtras';
 import { getDailyAyah } from '@/lib/services/dailyVerse';
 
 /**
@@ -134,6 +135,8 @@ export async function AyahOfTheDay() {
                 <Icon name="arrow-right" size={14} />
               </Button>
             </div>
+            {ayah && <DailyVerseExtras surah={ayah.surahNumber} ayah={ayah.ayahNumber} />}
+
             <div className="mt-6 flex items-center gap-2 text-xs text-cream-200/50">
               <Icon name="check" size={14} className="text-gold-400" />
               Source labels travel with every block.
