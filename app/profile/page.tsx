@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
+import { FoundationConnect } from '@/components/auth/FoundationConnect';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
@@ -105,6 +106,10 @@ export default function ProfilePage() {
             <Icon name="settings" size={14} />
             Settings
           </Button>
+        </div>
+
+        <div className="mt-8">
+          <FoundationConnect />
         </div>
       </AppShell>
     </>

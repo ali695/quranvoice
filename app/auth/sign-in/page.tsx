@@ -4,6 +4,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { Card } from '@/components/ui/Card';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { SignInForm } from '@/components/auth/SignInForm';
+import { FoundationConnect } from '@/components/auth/FoundationConnect';
 
 export const metadata: Metadata = {
   title: 'Sign in',
@@ -31,6 +32,10 @@ export default function SignInPage() {
               </Link>
             </div>
           </Card>
+
+          <div className="mt-4">
+            <FoundationConnect next="/profile" />
+          </div>
         </div>
       </AppShell>
     </>

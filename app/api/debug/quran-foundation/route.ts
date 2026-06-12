@@ -72,6 +72,25 @@ export async function GET(req: Request) {
   probes.push({ label: 'NEXT_PUBLIC_SUPABASE_ANON_KEY present',  ok: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) });
   probes.push({ label: 'SUPABASE_SERVICE_ROLE_KEY present',      ok: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY) });
 
+  // ── User-auth (Sign in with Quran.Foundation) config ───────────────
+  probes.push({
+    label: 'QURAN_FOUNDATION_USER_CLIENT_ID present',
+    ok: Boolean(process.env.QURAN_FOUNDATION_USER_CLIENT_ID),
+  });
+  probes.push({
+    label: 'QURAN_FOUNDATION_USER_REDIRECT_URI present',
+    ok: Boolean(process.env.QURAN_FOUNDATION_USER_REDIRECT_URI),
+    detail: process.env.QURAN_FOUNDATION_USER_REDIRECT_URI ?? 'not set',
+  });
+  probes.push({
+    label: 'user-auth flow configured',
+    ok: Boolean(process.env.QURAN_FOUNDATION_USER_CLIENT_ID && process.env.QURAN_FOUNDATION_USER_REDIRECT_URI),
+    detail:
+      process.env.QURAN_FOUNDATION_USER_CLIENT_ID && process.env.QURAN_FOUNDATION_USER_REDIRECT_URI
+        ? `oauth ${process.env.QURAN_FOUNDATION_USER_OAUTH_URL ?? 'https://prelive-oauth2.quran.foundation'}`
+        : 'set QURAN_FOUNDATION_USER_* to enable',
+  });
+
   // ── 2. Active mode ─────────────────────────────────────────────────
   const oauthUrl = process.env.QURAN_FOUNDATION_OAUTH_URL ?? 'https://oauth2.quran.foundation';
   const mode = /prelive/i.test(oauthUrl) ? 'prelive' : 'production';
