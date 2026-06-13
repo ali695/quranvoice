@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout/AppShell';
+import { QuickJump } from '@/components/search/QuickJump';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Icon } from '@/components/ui/Icon';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { getCurrentLocale } from '@/lib/i18n/server';
+import { resolveQuery } from '@/lib/services/search.service';
 import { search } from '@/lib/services/searchService';
 
 export const metadata: Metadata = {
@@ -18,6 +21,9 @@ interface SearchParams {
 
 export default async function SearchPage({ searchParams }: SearchParams) {
   const { q = '' } = await searchParams;
+  const locale = await getCurrentLocale();
+  // Navigation resolver runs first (always works); full-text is best-effort.
+  const jump = q ? resolveQuery(q, locale) : null;
   const results = q ? await search(q) : [];
   return (
     <>
@@ -47,18 +53,28 @@ export default async function SearchPage({ searchParams }: SearchParams) {
           </div>
         </form>
 
+        {/* Navigation jump (Surah / Ayah / Juz / Page) — always works. */}
+        {jump && <QuickJump resolved={jump} />}
+
         {!q ? (
-          <p className="text-sm text-cream-200/55">
-            Try <Link href="/search?q=2:255" className="text-gold-300 hover:text-gold-200">2:255</Link>,{' '}
-            <Link href="/search?q=patience" className="text-gold-300 hover:text-gold-200">patience</Link>, or{' '}
-            <Link href="/search?q=Yaseen" className="text-gold-300 hover:text-gold-200">Yaseen</Link>.
-          </p>
+          <div className="text-sm text-cream-200/55">
+            <p>
+              Try{' '}
+              <Link href="/search?q=2:255" className="text-gold-300 hover:text-gold-200">2:255</Link>,{' '}
+              <Link href="/search?q=Ayatul Kursi" className="text-gold-300 hover:text-gold-200">Ayatul Kursi</Link>,{' '}
+              <Link href="/search?q=Juz 3" className="text-gold-300 hover:text-gold-200">Juz 3</Link>,{' '}
+              <Link href="/search?q=Page 42" className="text-gold-300 hover:text-gold-200">Page 42</Link>, or{' '}
+              <Link href="/search?q=Yaseen" className="text-gold-300 hover:text-gold-200">Yaseen</Link>.
+            </p>
+          </div>
         ) : results.length === 0 ? (
-          <EmptyState
-            icon="search"
-            title={`No results for “${q}”`}
-            description="Try a different spelling, a reference like 2:255, or an English keyword."
-          />
+          !jump ? (
+            <EmptyState
+              icon="search"
+              title={`No matching Surah, Ayah, Juz or page found for “${q}”`}
+              description="Try a reference like 2:255, a surah name like Al-Baqarah, Juz 3, or Page 42. Full Quran text search may require additional Quran.Foundation search scope."
+            />
+          ) : null
         ) : (
           <ul className="flex flex-col gap-3">
             {results.map((r, i) => (
