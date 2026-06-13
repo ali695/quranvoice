@@ -1,15 +1,20 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Cormorant_Garamond, Amiri } from 'next/font/google';
 import './globals.css';
+import { cookies } from 'next/headers';
 import { AudioPlayerProvider } from '@/components/audio/AudioPlayerProvider';
 import { MiniAudioPlayer } from '@/components/audio/MiniAudioPlayer';
 import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { HreflangLinks } from '@/components/layout/HreflangLinks';
 import { SuppressExtensionWarnings } from '@/components/layout/SuppressExtensionWarnings';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { LocaleProvider } from '@/lib/i18n/context';
 import { getLocaleDirection } from '@/lib/i18n/locales';
 import { getCurrentLocale } from '@/lib/i18n/server';
+
+/** Resolve theme before paint to avoid a flash (handles 'system' + localStorage). */
+const NO_FLASH_THEME = `(function(){try{var m=document.cookie.match(/qv-theme=(dark|light|system)/);var p=m?m[1]:((localStorage.getItem('qv-theme'))||'dark');var r=p==='system'?(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):p;document.documentElement.setAttribute('data-theme',r);document.documentElement.style.colorScheme=r;}catch(e){}})();`;
 
 const inter = Inter({
   subsets: ['latin'],
@@ -80,17 +85,22 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getCurrentLocale();
   const dir = getLocaleDirection(locale);
+  // SSR theme from cookie ('system' resolves client-side via the no-flash script).
+  const themeCookie = (await cookies()).get('qv-theme')?.value;
+  const initialTheme = themeCookie === 'light' ? 'light' : 'dark';
 
   return (
     <html
       lang={locale}
       dir={dir}
+      data-theme={initialTheme}
       className={`${inter.variable} ${cormorant.variable} ${amiri.variable}`}
       suppressHydrationWarning
     >
       <head>
         {/* hreflang alternates for every supported locale */}
         <HreflangLinks />
+        <script dangerouslySetInnerHTML={{ __html: NO_FLASH_THEME }} />
       </head>
       <body
         className="min-h-screen bg-ink-900 text-cream-100 antialiased"
@@ -108,16 +118,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           Skip to main content
         </a>
         <SuppressExtensionWarnings />
-        <LocaleProvider initialLocale={locale}>
-          <AudioPlayerProvider>
-            <Header />
-            <main id="main" className="relative pb-24">
-              {children}
-            </main>
-            <Footer />
-            <MiniAudioPlayer />
-          </AudioPlayerProvider>
-        </LocaleProvider>
+        <ThemeProvider>
+          <LocaleProvider initialLocale={locale}>
+            <AudioPlayerProvider>
+              <Header />
+              <main id="main" className="relative pb-24">
+                {children}
+              </main>
+              <Footer />
+              <MiniAudioPlayer />
+            </AudioPlayerProvider>
+          </LocaleProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

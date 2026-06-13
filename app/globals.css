@@ -3,12 +3,92 @@
 @tailwind utilities;
 
 @layer base {
+  /* ── Dark Gold (default) — palette as space-separated RGB triplets so
+        Tailwind's rgb(var(--x) / <alpha-value>) keeps working everywhere. ── */
   :root {
-    --color-bg: 10 14 26;
-    --color-surface: 17 23 41;
-    --color-border: 37 43 68;
-    --color-gold: 212 165 116;
-    --color-cream: 245 240 232;
+    --ink-950: 7 10 19;
+    --ink-900: 10 14 26;
+    --ink-850: 13 18 32;
+    --ink-800: 17 23 41;
+    --ink-750: 22 28 48;
+    --ink-700: 28 34 56;
+    --ink-600: 37 43 68;
+    --ink-500: 50 58 85;
+
+    --gold-50: 253 248 241;
+    --gold-100: 250 238 217;
+    --gold-200: 243 218 176;
+    --gold-300: 233 193 136;
+    --gold-400: 223 174 110;
+    --gold-500: 212 165 116;
+    --gold-600: 189 138 82;
+    --gold-700: 154 111 67;
+    --gold-800: 120 87 56;
+    --gold-900: 94 69 48;
+
+    --cream-50: 253 252 249;
+    --cream-100: 249 245 238;
+    --cream-200: 245 240 232;
+    --cream-300: 235 226 210;
+    --cream-400: 217 203 177;
+
+    /* Semantic aliases (legacy) */
+    --color-bg: var(--ink-900);
+    --color-surface: var(--ink-800);
+    --color-border: var(--ink-600);
+    --color-gold: var(--gold-500);
+    --color-cream: var(--cream-200);
+
+    /* Theme-aware chrome */
+    --body-text: 232 230 225;
+    --scrollbar-track: 10 14 26;
+    --scrollbar-thumb: 37 43 68;
+    --scrollbar-thumb-hover: 50 58 85;
+    --selection-bg: 212 165 116;
+    --selection-text: 255 255 255;
+  }
+
+  /* ── White Gold (premium light) — clean warm white, dark charcoal text,
+        gold for accents only. ink-950 stays dark (text-on-gold + scrims). ── */
+  [data-theme='light'] {
+    --ink-950: 7 10 19;
+    --ink-900: 250 247 240;
+    --ink-850: 255 255 255;
+    --ink-800: 251 248 242;
+    --ink-750: 244 239 229;
+    --ink-700: 231 223 206;
+    --ink-600: 219 207 183;
+    --ink-500: 201 184 147;
+
+    --gold-50: 251 243 230;
+    --gold-100: 244 230 205;
+    --gold-200: 232 207 163;
+    --gold-300: 161 110 35;
+    --gold-400: 146 99 30;
+    --gold-500: 186 130 54;
+    --gold-600: 154 105 40;
+    --gold-700: 120 82 33;
+    --gold-800: 96 66 28;
+    --gold-900: 74 52 24;
+
+    --cream-50: 27 24 19;
+    --cream-100: 42 36 28;
+    --cream-200: 60 53 42;
+    --cream-300: 92 83 70;
+    --cream-400: 138 125 104;
+
+    --color-bg: var(--ink-900);
+    --color-surface: var(--ink-850);
+    --color-border: var(--ink-600);
+    --color-gold: var(--gold-600);
+    --color-cream: var(--cream-100);
+
+    --body-text: 42 36 28;
+    --scrollbar-track: 240 235 225;
+    --scrollbar-thumb: 219 207 183;
+    --scrollbar-thumb-hover: 201 184 147;
+    --selection-bg: 186 130 54;
+    --selection-text: 255 255 255;
   }
 
   * {
@@ -22,7 +102,7 @@
 
   body {
     background-color: rgb(var(--color-bg));
-    color: #e8e6e1;
+    color: rgb(var(--body-text));
     font-family: var(--font-inter), system-ui, sans-serif;
     overflow-x: hidden;
   }
@@ -36,8 +116,8 @@
 
   /* Selection */
   ::selection {
-    background-color: rgba(212, 165, 116, 0.3);
-    color: #fff;
+    background-color: rgb(var(--selection-bg) / 0.3);
+    color: rgb(var(--selection-text));
   }
 
   /* Scrollbar */
@@ -47,16 +127,16 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #0a0e1a;
+    background: rgb(var(--scrollbar-track));
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #252b44;
+    background: rgb(var(--scrollbar-thumb));
     border-radius: 6px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #323a55;
+    background: rgb(var(--scrollbar-thumb-hover));
   }
 }
 

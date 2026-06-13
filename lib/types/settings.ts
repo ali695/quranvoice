@@ -79,7 +79,8 @@ export interface MemorizationSettings {
 }
 
 export interface AppearanceSettings {
-  theme: 'dark' | 'light';
+  /** 'dark' = Dark Gold (default), 'light' = White Gold, 'system' = follow OS. */
+  theme: 'dark' | 'light' | 'system';
   density: 'compact' | 'comfortable';
 }
 
