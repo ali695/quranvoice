@@ -33,6 +33,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
     defaultTafsirId: null,
     language: 'en',
     displayMode: 'panel',
+    fallbackTafsirEnabled: true,
   },
   audio: {
     defaultReciterId: 'ar.alafasy',

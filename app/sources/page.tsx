@@ -50,6 +50,24 @@ export default async function SourcesPage() {
             <Link href="/tafsir">Browse tafsir resources →</Link>
           </p>
 
+          <h3>Fallback tafsir source</h3>
+          <p>
+            QuranVoice primarily uses <strong>Quran.Foundation</strong> for Quranic content. If a
+            tafsir is unavailable from Quran.Foundation for a verse or your selected language,
+            QuranVoice can use a configured <strong>fallback tafsir source</strong> — the open{' '}
+            <a href="https://github.com/spa5k/tafsir_api" target="_blank" rel="noopener noreferrer">
+              spa5k/tafsir_api
+            </a>{' '}
+            edition set. Fallback tafsir is always displayed with a clear source label and a
+            “Fallback source” badge, so it is never mixed with Quran.Foundation content silently.
+          </p>
+          <ul>
+            <li>Quran.Foundation is always tried first; the fallback is secondary.</li>
+            <li>Source metadata, edition name, author, and language remain visible.</li>
+            <li>QuranVoice does not generate tafsir using AI.</li>
+            <li>You can disable the fallback entirely in Settings → Tafsir.</li>
+          </ul>
+
           <h2>Audio recitations ({summary.counts.recitations || '—'})</h2>
           <p>
             Audio is streamed from third-party CDNs (Quran.Foundation when available, otherwise

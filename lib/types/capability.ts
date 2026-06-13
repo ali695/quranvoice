@@ -54,6 +54,12 @@ export interface Capabilities {
   hasTafsirs: boolean;
   tafsirCount: number;
   tafsirLanguages: string[];
+  /** Quran.Foundation tafsir resources exist (primary source). */
+  hasQuranFoundationTafsirs: boolean;
+  /** spa5k fallback tafsir editions exist (secondary source). */
+  hasFallbackTafsirs: boolean;
+  fallbackTafsirEditionCount: number;
+  fallbackTafsirLanguages: string[];
 
   // ── Audio ────────────────────────────────────────────────────────
   hasRecitations: boolean;

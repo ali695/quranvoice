@@ -43,6 +43,9 @@ export interface CapabilityProbeInput {
   translationLanguages: string[];
   tafsirCount: number;
   tafsirLanguages: string[];
+  /** spa5k fallback tafsir editions (secondary source). */
+  fallbackTafsirCount: number;
+  fallbackTafsirLanguages: string[];
   recitationCount: number;
   /** True when a per-ayah audio file was actually returned for the probe. */
   ayahAudioAvailable: boolean;
@@ -87,7 +90,9 @@ export function deriveCapabilities(input: CapabilityProbeInput): Capabilities {
     typeof v?.page_number === 'number' && v.page_number > 0;
 
   const translations = input.translationCount > 0;
-  const tafsirs = input.tafsirCount > 0;
+  const qfTafsirs = input.tafsirCount > 0;
+  const fallbackTafsirs = input.fallbackTafsirCount > 0;
+  const tafsirs = qfTafsirs || fallbackTafsirs;
   const recitations = input.recitationCount > 0;
 
   // Page metadata exists generically, but distinct 8/12/16-line break
@@ -117,6 +122,10 @@ export function deriveCapabilities(input: CapabilityProbeInput): Capabilities {
     hasTafsirs: tafsirs,
     tafsirCount: input.tafsirCount,
     tafsirLanguages: input.tafsirLanguages,
+    hasQuranFoundationTafsirs: qfTafsirs,
+    hasFallbackTafsirs: fallbackTafsirs,
+    fallbackTafsirEditionCount: input.fallbackTafsirCount,
+    fallbackTafsirLanguages: input.fallbackTafsirLanguages,
 
     hasRecitations: recitations,
     hasAudio: recitations,
@@ -150,7 +159,11 @@ export function deriveCapabilities(input: CapabilityProbeInput): Capabilities {
         ? flag(true, 'available', `${input.translationCount} translation resources, ${input.translationLanguages.length} languages`)
         : (providerConfigured ? flag(false, 'no_resources', 'No translation resources returned.') : noProvider()),
       tafsirs: tafsirs
-        ? flag(true, 'available', `${input.tafsirCount} tafsir resources, ${input.tafsirLanguages.length} languages`)
+        ? flag(
+            true,
+            'available',
+            `${input.tafsirCount} Quran.Foundation + ${input.fallbackTafsirCount} fallback tafsir resources`,
+          )
         : (providerConfigured ? flag(false, 'no_resources', 'No tafsir resources returned.') : noProvider()),
       recitations: recitations
         ? flag(true, 'available', `${input.recitationCount} reciters`)
@@ -188,6 +201,8 @@ export function emptyCapabilities(): Capabilities {
     translationLanguages: [],
     tafsirCount: 0,
     tafsirLanguages: [],
+    fallbackTafsirCount: 0,
+    fallbackTafsirLanguages: [],
     recitationCount: 0,
     ayahAudioAvailable: false,
     asbabAvailable: false,

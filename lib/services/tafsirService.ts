@@ -28,15 +28,19 @@ interface FoundationTafsirsResponse {
   tafsirs?: FoundationTafsirResource[];
 }
 
+interface FoundationTafsirItem {
+  resource_id?: number;
+  resource_name?: string;
+  text?: string;
+  language_id?: number;
+  language_name?: string;
+}
+
 interface FoundationTafsirVerseResponse {
-  tafsir?: {
-    resource_id: number;
-    resource_name: string;
-    text: string;
-    language_id?: number;
-    language_name?: string;
-    verses?: Record<string, unknown>;
-  };
+  /** Current QF v4 shape: an array under `tafsirs`. */
+  tafsirs?: FoundationTafsirItem[];
+  /** Legacy/singular shape, kept for resilience. */
+  tafsir?: FoundationTafsirItem;
 }
 
 export async function listTafsirs(language = 'en'): Promise<TafsirResource[]> {
@@ -94,16 +98,26 @@ export async function getTafsirForAyah(
   const json = await foundationFetch<FoundationTafsirVerseResponse>(
     F.tafsirByVerse(numericId, verseKey),
   );
-  if (!json?.tafsir) return null;
+  // QF v4 returns the content under `tafsirs[0].text`; tolerate the singular
+  // legacy shape too. The item carries no resource name, so resolve it from
+  // the catalog by id.
+  const item = json?.tafsirs?.[0] ?? json?.tafsir;
+  const text = item?.text?.trim();
+  if (!text) return null;
+
+  const catalog = await listTafsirs('en');
+  const meta = catalog.find((r) => String(r.id) === String(numericId));
+  const book = meta?.name ?? item?.resource_name ?? `Tafsir ${numericId}`;
+
   return [
     {
       resourceId: numericId,
-      book: json.tafsir.resource_name,
-      author: json.tafsir.resource_name,
-      language: json.tafsir.language_name ?? 'en',
-      textHtml: json.tafsir.text,
+      book,
+      author: meta?.authorName ?? item?.resource_name ?? book,
+      language: meta?.language ?? item?.language_name ?? 'ar',
+      textHtml: text,
       source: {
-        name: `${json.tafsir.resource_name} via Quran.Foundation`,
+        name: `${book} via Quran.Foundation`,
         url: 'https://api-docs.quran.foundation/',
         verified: true,
       },

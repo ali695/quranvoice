@@ -55,6 +55,8 @@ export interface TafsirSettings {
   defaultTafsirId: string | number | null;
   language: string;
   displayMode: 'inline' | 'panel';
+  /** Use the spa5k secondary tafsir source when Quran.Foundation has none. */
+  fallbackTafsirEnabled: boolean;
 }
 
 export interface AudioSettings {

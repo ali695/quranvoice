@@ -32,7 +32,16 @@ import {
   type RawFoundationTranslation,
 } from '@/lib/quran-foundation/resource-mappers';
 import { getAyahAudioFile } from '@/lib/services/audioService';
+import {
+  getFallbackEditionCount,
+  getFallbackLanguages,
+} from '@/lib/services/tafsir-fallback.service';
 import type { Capabilities } from '@/lib/types/capability';
+
+interface FallbackTafsirInfo {
+  count: number;
+  languages: string[];
+}
 
 const PROBE_VERSE_KEY = '2:255';
 const CACHE_TTL_MS = 5 * 60_000;
@@ -56,7 +65,7 @@ interface FoundationRecitationsEnvelope {
   recitations?: Array<{ id: number }>;
 }
 
-async function probeFoundation(): Promise<Capabilities | null> {
+async function probeFoundation(fallback: FallbackTafsirInfo): Promise<Capabilities | null> {
   const [verseRes, translationsRes, tafsirsRes, recitationsRes] = await Promise.all([
     foundationFetch<FoundationVerseEnvelope>(F.verseCapabilityProbe(PROBE_VERSE_KEY), {
       revalidate: 3600,
@@ -99,6 +108,8 @@ async function probeFoundation(): Promise<Capabilities | null> {
     tafsirLanguages: distinctLanguages(
       tafsirResources.map((t) => ({ language: t.language })),
     ),
+    fallbackTafsirCount: fallback.count,
+    fallbackTafsirLanguages: fallback.languages,
     recitationCount,
     ayahAudioAvailable,
     // Review-gated / mapping features are resolved per-verse by their own
@@ -118,7 +129,7 @@ interface CloudEdition {
   type?: string;
 }
 
-async function probeAlquranCloud(): Promise<Capabilities | null> {
+async function probeAlquranCloud(fallback: FallbackTafsirInfo): Promise<Capabilities | null> {
   const [text, translationsEd, audioEd] = await Promise.all([
     alquranCloudFetch<{ data?: { ayahs?: Array<{ text?: string; page?: number }> } }>(
       `/surah/2/quran-uthmani`,
@@ -149,6 +160,8 @@ async function probeAlquranCloud(): Promise<Capabilities | null> {
     ),
     tafsirCount: 0,
     tafsirLanguages: [],
+    fallbackTafsirCount: fallback.count,
+    fallbackTafsirLanguages: fallback.languages,
     recitationCount: audioEditions.length,
     ayahAudioAvailable: audioEditions.some((e) => e.type === 'versebyverse'),
     asbabAvailable: false,
@@ -161,15 +174,35 @@ async function probeAlquranCloud(): Promise<Capabilities | null> {
 export async function getCapabilities(force = false): Promise<Capabilities> {
   if (!force && cache && cache.expiresAt > Date.now()) return cache.value;
 
+  // Fallback tafsir editions are provider-independent (spa5k), so resolve
+  // them once and feed them into whichever content provider is active.
+  let fallback: FallbackTafsirInfo = { count: 0, languages: [] };
+  try {
+    const [count, languages] = await Promise.all([
+      getFallbackEditionCount(),
+      getFallbackLanguages(),
+    ]);
+    fallback = { count, languages };
+  } catch {
+    fallback = { count: 0, languages: [] };
+  }
+
   let value: Capabilities | null = null;
   if (isFoundationConfigured()) {
-    value = await probeFoundation();
+    value = await probeFoundation(fallback);
   }
   if (!value) {
-    value = await probeAlquranCloud();
+    value = await probeAlquranCloud(fallback);
   }
   if (!value) {
-    value = emptyCapabilities();
+    // No content provider, but fallback tafsir editions may still exist.
+    value = {
+      ...emptyCapabilities(),
+      hasFallbackTafsirs: fallback.count > 0,
+      fallbackTafsirEditionCount: fallback.count,
+      fallbackTafsirLanguages: fallback.languages,
+      hasTafsirs: fallback.count > 0,
+    };
   }
 
   cache = { value, expiresAt: Date.now() + CACHE_TTL_MS };

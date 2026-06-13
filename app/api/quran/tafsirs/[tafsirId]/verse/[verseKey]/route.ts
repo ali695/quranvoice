@@ -1,12 +1,17 @@
 import { badRequest, ok } from '@/lib/api/responses';
-import { getTafsirForAyah } from '@/lib/services/tafsirService';
+import { resolveTafsirForVerse } from '@/lib/services/tafsir.service';
 
 export const revalidate = 3600;
 
 const VERSE_KEY = /^(\d{1,3}):(\d{1,3})$/;
 
+/**
+ * Resolved tafsir for a specific selected source + verse, with fallback.
+ * tafsirId may be a Quran.Foundation numeric id, a spa5k slug, or "auto".
+ * Query: lang (default en), fallback (1/0). Returns NormalizedTafsir | null.
+ */
 export async function GET(
-  _req: Request,
+  req: Request,
   context: { params: Promise<{ tafsirId: string; verseKey: string }> },
 ) {
   const { tafsirId, verseKey } = await context.params;
@@ -16,6 +21,18 @@ export async function GET(
   if (!m) return badRequest('invalid verseKey');
   const surah = Number(m[1]);
   const ayah = Number(m[2]);
-  const data = await getTafsirForAyah(surah, ayah, tafsirId);
-  return ok(data ?? []);
+
+  const url = new URL(req.url);
+  const language = url.searchParams.get('lang') ?? 'en';
+  const fallbackEnabled = url.searchParams.get('fallback') !== '0';
+  const selectedId = tafsirId === 'auto' ? undefined : tafsirId;
+
+  const data = await resolveTafsirForVerse({
+    surah,
+    ayah,
+    selectedId,
+    language,
+    fallbackEnabled,
+  });
+  return ok(data, { revalidate: 3600 });
 }

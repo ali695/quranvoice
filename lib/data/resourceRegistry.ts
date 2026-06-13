@@ -98,11 +98,28 @@ export const RESOURCE_REGISTRY: ResourceEntry[] = [
     attributionRequired: true,
   },
   // ─────────────────────────────────────────────────────────────
-  // TAFSIR — NOT YET REGISTERED
-  // We deliberately do not register tafsir resources here yet.
-  // Until a verified, license-checked tafsir source is added,
-  // every tafsir block in the UI renders an unavailable state.
+  // TAFSIR
+  // Primary tafsir comes live from Quran.Foundation (not enumerated here —
+  // the catalog is fetched dynamically). The SECONDARY fallback below is the
+  // open spa5k/tafsir_api edition set, used only when Quran.Foundation has no
+  // content for a verse/language. Always displayed with a fallback label.
   // ─────────────────────────────────────────────────────────────
+  {
+    id: 'tafsir-fallback-spa5k',
+    type: 'tafsir',
+    title: 'Fallback Tafsir API (spa5k/tafsir_api)',
+    language: 'multi',
+    sourceName: 'spa5k/tafsir_api (open tafsir editions)',
+    sourceUrl: 'https://github.com/spa5k/tafsir_api',
+    licenseStatus: 'open_source_claim',
+    canDisplay: true,
+    canCache: true,
+    canDownload: true,
+    canRehost: true,
+    attributionRequired: true,
+    notes:
+      'Secondary tafsir source only. Quran.Foundation remains primary. Editions sourced from quran.com et al.; shown with a clear fallback source label. Self-host the data folder before production rollout.',
+  },
 
   // ─────────────────────────────────────────────────────────────
   // WORD BY WORD — NOT YET REGISTERED
