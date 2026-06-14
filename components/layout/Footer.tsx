@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import { Logo } from '@/components/ui/Logo';
-import { LanguageSelector } from '@/components/layout/LanguageSelector';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { FOOTER_LINKS } from '@/lib/data/footerLinks';
 
@@ -77,9 +76,7 @@ export function Footer() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              {/* Language selector */}
-              <LanguageSelector variant="full" />
-              {/* Real theme switcher */}
+              {/* Theme switcher (language is chosen in the header / settings) */}
               <ThemeToggle compact />
               {/* Socials */}
               <div className="flex items-center gap-1">

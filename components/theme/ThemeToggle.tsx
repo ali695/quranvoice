@@ -5,6 +5,27 @@ import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/lib/utils/cn';
 import type { ThemePref } from '@/lib/theme/theme';
 
+/**
+ * Single icon button that flips Dark Gold ↔ White Gold — for the header
+ * ("daylight" quick toggle). Shows a sun in dark mode (tap for light) and a
+ * moon in light mode (tap for dark).
+ */
+export function ThemeButton() {
+  const { resolved, setTheme } = useTheme();
+  const next = resolved === 'dark' ? 'light' : 'dark';
+  return (
+    <button
+      type="button"
+      onClick={() => setTheme(next)}
+      aria-label={resolved === 'dark' ? 'Switch to White Gold (light)' : 'Switch to Dark Gold'}
+      title={resolved === 'dark' ? 'Light theme' : 'Dark theme'}
+      className="flex h-10 w-10 items-center justify-center rounded-lg text-cream-100/80 transition-colors hover:bg-ink-800/70 hover:text-gold-300"
+    >
+      <Icon name={resolved === 'dark' ? 'sun' : 'moon'} size={18} />
+    </button>
+  );
+}
+
 const OPTIONS: Array<{ value: ThemePref; label: string; icon: 'moon' | 'sun' | 'compass' }> = [
   { value: 'dark', label: 'Dark Gold', icon: 'moon' },
   { value: 'light', label: 'White Gold', icon: 'sun' },

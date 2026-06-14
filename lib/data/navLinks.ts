@@ -1,10 +1,10 @@
 export const NAV_LINKS = [
-  { label: 'Quran', href: '/quran' },
-  { label: 'Recitations', href: '/recitations' },
-  { label: 'Tafsir', href: '/tafsir' },
-  { label: 'Translations', href: '/translations' },
-  { label: 'Learn', href: '/learn' },
-  { label: 'Tools', href: '/tools' },
+  { label: 'Quran', href: '/quran', key: 'nav.quran' },
+  { label: 'Recitations', href: '/recitations', key: 'nav.recitations' },
+  { label: 'Tafsir', href: '/tafsir', key: 'nav.tafsir' },
+  { label: 'Translations', href: '/translations', key: 'nav.translations' },
+  { label: 'Learn', href: '/learn', key: 'nav.learn' },
+  { label: 'Tools', href: '/tools', key: 'nav.tools' },
 ] as const;
 
 export const QURAN_SIDEBAR_LINKS = [

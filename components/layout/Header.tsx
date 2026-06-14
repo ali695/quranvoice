@@ -5,10 +5,13 @@ import { useEffect, useState } from 'react';
 import { Icon } from '@/components/ui/Icon';
 import { Logo } from '@/components/ui/Logo';
 import { NAV_LINKS } from '@/lib/data/navLinks';
+import { ThemeButton } from '@/components/theme/ThemeToggle';
+import { useTranslation } from '@/lib/i18n/context';
 import { LanguageSelector } from './LanguageSelector';
 import { MobileNav } from './MobileNav';
 
 export function Header() {
+  const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -47,7 +50,7 @@ export function Header() {
                 href={item.href}
                 className="rounded-lg px-3 py-2 text-sm font-medium text-cream-200/80 transition-colors hover:bg-ink-800/70 hover:text-gold-300"
               >
-                {item.label}
+                {t(item.key)}
               </Link>
             ))}
           </nav>
@@ -60,6 +63,8 @@ export function Header() {
             >
               <Icon name="search" size={18} />
             </Link>
+            {/* Daylight (theme) quick toggle */}
+            <ThemeButton />
             <span className="hidden sm:inline-flex">
               <LanguageSelector variant="compact" />
             </span>
@@ -74,7 +79,7 @@ export function Header() {
               href="/auth/sign-in"
               className="ml-1 hidden h-10 items-center gap-2 rounded-lg border border-gold-500/30 bg-gold-500/5 px-4 text-sm font-medium text-gold-200 transition-all hover:border-gold-400/60 hover:bg-gold-500/10 hover:text-gold-100 md:inline-flex"
             >
-              Sign in
+              {t('nav.sign-in')}
             </Link>
             <Link
               href="/auth/sign-in"
