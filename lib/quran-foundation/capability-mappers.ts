@@ -88,6 +88,9 @@ export function deriveCapabilities(input: CapabilityProbeInput): Capabilities {
 
   const mushafPages =
     typeof v?.page_number === 'number' && v.page_number > 0;
+  // Quran.Foundation provides real printed-page line data for the 15-line
+  // Madani (mushaf 1) and 16-line Indo-Pak (mushaf 7) layouts — verified.
+  const foundationMushaf = input.provider === 'foundation' && mushafPages;
 
   const translations = input.translationCount > 0;
   const qfTafsirs = input.tafsirCount > 0;
@@ -139,7 +142,8 @@ export function deriveCapabilities(input: CapabilityProbeInput): Capabilities {
     hasMushafPages: mushafPages,
     hasMushafLineBreaks8: false,
     hasMushafLineBreaks12: false,
-    hasMushafLineBreaks16: false,
+    hasMushafLineBreaks15: foundationMushaf,
+    hasMushafLineBreaks16: foundationMushaf,
 
     hasAsbab: input.asbabAvailable,
     hasShanENuzool: input.shanENuzoolAvailable,
@@ -176,7 +180,12 @@ export function deriveCapabilities(input: CapabilityProbeInput): Capabilities {
         : fieldAbsent('Mushaf page metadata'),
       mushafLineBreaks8: lineBreakFlag(8),
       mushafLineBreaks12: lineBreakFlag(12),
-      mushafLineBreaks16: lineBreakFlag(16),
+      mushafLineBreaks15: foundationMushaf
+        ? flag(true, 'available', '15-line Madani Mushaf (KFGQPC)')
+        : lineBreakFlag(15),
+      mushafLineBreaks16: foundationMushaf
+        ? flag(true, 'available', '16-line Indo-Pak Mushaf')
+        : lineBreakFlag(16),
       asbab: input.asbabAvailable
         ? flag(true, 'available', 'Reviewed Supabase entry')
         : flag(false, 'requires_reviewed_source', 'Awaiting a reviewed Asbab al-Nuzul entry.'),

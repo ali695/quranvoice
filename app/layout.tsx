@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Cormorant_Garamond, Amiri } from 'next/font/google';
+import { Inter, Cormorant_Garamond, Amiri, Amiri_Quran } from 'next/font/google';
 import './globals.css';
 import { cookies } from 'next/headers';
 import { AudioPlayerProvider } from '@/components/audio/AudioPlayerProvider';
@@ -33,6 +33,14 @@ const amiri = Amiri({
   subsets: ['arabic'],
   weight: ['400', '700'],
   variable: '--font-amiri',
+  display: 'swap',
+});
+
+// Mushaf-style Quran face for premium ayah/mushaf rendering.
+const amiriQuran = Amiri_Quran({
+  subsets: ['arabic'],
+  weight: ['400'],
+  variable: '--font-amiri-quran',
   display: 'swap',
 });
 
@@ -94,7 +102,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       lang={locale}
       dir={dir}
       data-theme={initialTheme}
-      className={`${inter.variable} ${cormorant.variable} ${amiri.variable}`}
+      className={`${inter.variable} ${cormorant.variable} ${amiri.variable} ${amiriQuran.variable}`}
       suppressHydrationWarning
     >
       <head>

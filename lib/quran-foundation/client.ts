@@ -62,25 +62,32 @@ export async function foundationFetch<T = unknown>(
   const token = await getFoundationToken();
   if (!token) return null;
   const url = buildUrl(env, path, opts.searchParams);
-  try {
-    const res = await fetch(url, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        // Foundation Content API auth headers.
-        'x-auth-token': token,
-        'x-client-id': env.clientId,
-      },
-      next: opts.noStore
-        ? undefined
-        : { revalidate: opts.revalidate ?? 3600 },
-      cache: opts.noStore ? 'no-store' : undefined,
-    });
-    if (!res.ok) return null;
-    return (await res.json()) as T;
-  } catch {
-    return null;
+  // Retry once on a transient network/connect failure or timeout — serverless
+  // cold starts and the first connect to the API host can be slow, and a
+  // spurious null would wrongly demote callers (e.g. capability detection
+  // falling back to the open provider). Per-attempt timeout keeps it bounded.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          // Foundation Content API auth headers.
+          'x-auth-token': token,
+          'x-client-id': env.clientId,
+        },
+        signal: AbortSignal.timeout(15_000),
+        next: opts.noStore ? undefined : { revalidate: opts.revalidate ?? 3600 },
+        cache: opts.noStore ? 'no-store' : undefined,
+      });
+      if (!res.ok) return null; // a real HTTP error is not retried
+      return (await res.json()) as T;
+    } catch {
+      // Network error / timeout — retry once, then give up.
+      if (attempt === 1) return null;
+    }
   }
+  return null;
 }
 
 /**

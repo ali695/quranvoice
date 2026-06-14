@@ -78,6 +78,9 @@ export interface Capabilities {
   hasMushafPages: boolean;
   hasMushafLineBreaks8: boolean;
   hasMushafLineBreaks12: boolean;
+  /** 15-line Madani (KFGQPC) printed-page line data is available. */
+  hasMushafLineBreaks15: boolean;
+  /** 16-line Indo-Pak printed-page line data is available. */
   hasMushafLineBreaks16: boolean;
 
   // ── Review-gated / mapping features ──────────────────────────────
@@ -99,6 +102,7 @@ export interface Capabilities {
     mushafPages: CapabilityFlag;
     mushafLineBreaks8: CapabilityFlag;
     mushafLineBreaks12: CapabilityFlag;
+    mushafLineBreaks15: CapabilityFlag;
     mushafLineBreaks16: CapabilityFlag;
     asbab: CapabilityFlag;
     shanENuzool: CapabilityFlag;

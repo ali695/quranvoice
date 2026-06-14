@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { DailyVerseExtras } from '@/components/home/DailyVerseExtras';
+import { toArabicDigits } from '@/lib/utils/arabicNumber';
 import { getDailyAyah } from '@/lib/services/dailyVerse';
 
 /**
@@ -39,11 +40,14 @@ export async function AyahOfTheDay() {
             <div className="mt-7">
               {ayah?.arabic ? (
                 <p
-                  className="arabic text-right text-3xl leading-[2] text-cream-50 sm:text-4xl"
+                  className="arabic text-right text-3xl text-cream-50 sm:text-4xl"
                   dir="rtl"
                   lang="ar"
                 >
                   {ayah.arabic}
+                  <span className="ayah-marker font-sans align-middle">
+                    {toArabicDigits(ayah.ayahNumber)}
+                  </span>
                 </p>
               ) : (
                 <ApiErrorBlock message="Could not load Arabic text from the verified Quran provider. Try again shortly." />

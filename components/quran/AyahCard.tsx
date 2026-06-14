@@ -5,6 +5,7 @@ import { useAudioPlayer } from '@/components/audio/AudioPlayerProvider';
 import type { Ayah, WordToken } from '@/lib/types/quran';
 import type { TranslationVerse } from '@/lib/types/translation';
 import { cn } from '@/lib/utils/cn';
+import { toArabicDigits } from '@/lib/utils/arabicNumber';
 import { Icon } from '@/components/ui/Icon';
 import { AyahActions } from './AyahActions';
 import { NowRecitingBadge } from './NowRecitingBadge';
@@ -140,12 +141,15 @@ export function AyahCard({
 
       <div className="mt-6">
         <p
-          className="arabic text-right leading-[2.1] text-cream-50"
+          className="arabic text-right text-cream-50"
           dir="rtl"
           lang="ar"
           style={{ fontSize: `${arabicFontSize}px` }}
         >
           {ayah.arabic}
+          <span className="ayah-marker font-sans align-middle">
+            {toArabicDigits(ayah.ayahNumber)}
+          </span>
         </p>
       </div>
 

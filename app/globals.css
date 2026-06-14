@@ -146,9 +146,44 @@
   }
 
   .arabic {
-    font-family: var(--font-amiri), 'Amiri', 'Scheherazade New', serif;
+    font-family: var(--font-amiri-quran), var(--font-amiri), 'Amiri Quran', 'Amiri',
+      'Scheherazade New', serif;
     direction: rtl;
-    line-height: 1.9;
+    line-height: 2.15;
+    letter-spacing: 0;
+    word-spacing: 0.04em;
+    font-feature-settings: 'calt' 1, 'liga' 1, 'rlig' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Premium printed-Mushaf rendering for page-by-page layout. */
+  .quran-mushaf {
+    font-family: var(--font-amiri-quran), 'Amiri Quran', var(--font-amiri), 'Amiri', serif;
+    direction: rtl;
+    font-feature-settings: 'calt' 1, 'liga' 1, 'rlig' 1;
+    text-rendering: optimizeLegibility;
+    font-size: clamp(1.35rem, 1rem + 1.6vw, 2rem);
+  }
+
+  /* Warm parchment panel for the Mushaf page (theme-aware). */
+  .mushaf-page {
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgb(var(--gold-500) / 0.06), transparent 60%),
+      linear-gradient(180deg, rgb(var(--ink-850)), rgb(var(--ink-800)));
+  }
+
+  /* Ornamental verse-end marker (number rendered inside). */
+  .ayah-marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.9em;
+    height: 1.9em;
+    padding: 0 0.3em;
+    margin: 0 0.15em;
+    font-size: 0.62em;
+    color: rgb(var(--gold-400));
+    background: radial-gradient(circle, rgb(var(--gold-500) / 0.14), transparent 72%);
   }
 
   .text-gradient-gold {

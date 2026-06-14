@@ -45,6 +45,16 @@ export const F = {
   /** GET — verses of a mushaf page */
   versesByPage: (page: number, qs = '') =>
     `${FOUNDATION_BASE_PATH}/verses/by_page/${page}${qs ? `?${qs}` : ''}`,
+  /**
+   * GET — a mushaf page with per-word line layout. `mushaf` selects the
+   * physical layout (1 = 15-line Madani / KFGQPC, 7 = 16-line Indo-Pak).
+   * `line_number` is the real printed line for each word.
+   */
+  mushafPage: (page: number, mushaf: number) =>
+    `${FOUNDATION_BASE_PATH}/verses/by_page/${page}?` +
+    `mushaf=${mushaf}&per_page=300&words=true&` +
+    `word_fields=text_uthmani,char_type_name,line_number,page_number&` +
+    `fields=text_uthmani,page_number,juz_number`,
   /** GET — verses of a hizb */
   versesByHizb: (hizb: number, qs = '') =>
     `${FOUNDATION_BASE_PATH}/verses/by_hizb/${hizb}${qs ? `?${qs}` : ''}`,

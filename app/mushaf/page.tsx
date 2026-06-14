@@ -19,6 +19,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const STYLES = [
   {
+    href: '/16-line-quran',
+    icon: 'book' as const,
+    title: 'Page-by-page Mushaf (15 & 16 line)',
+    body: 'Real printed-page layout from Quran.Foundation — 15-line Madani (KFGQPC) and 16-line Indo-Pak, with genuine line breaks.',
+    status: 'Available',
+  },
+  {
     href: '/uthmani-quran',
     icon: 'book' as const,
     title: 'Uthmani Quran',
@@ -26,39 +33,32 @@ const STYLES = [
     status: 'Available',
   },
   {
-    href: '/tajweed-quran',
-    icon: 'sparkle' as const,
-    title: 'Tajweed Quran',
-    body: 'Color-coded Tajweed rules — activates only with verified data.',
-    status: 'Locked',
-  },
-  {
-    href: '/8-line-quran',
-    icon: 'feather' as const,
-    title: '8-line Mushaf',
-    body: 'Classical 8-line per-page mushaf layout. Needs verified line-break data.',
-    status: 'Locked',
-  },
-  {
-    href: '/12-line-quran',
-    icon: 'feather' as const,
-    title: '12-line Mushaf',
-    body: 'Classical 12-line per-page mushaf layout. Needs verified line-break data.',
-    status: 'Locked',
-  },
-  {
-    href: '/16-line-quran',
-    icon: 'feather' as const,
-    title: '16-line Mushaf',
-    body: 'Indo-Pak 16-line per-page mushaf layout. Needs verified line-break data.',
-    status: 'Locked',
-  },
-  {
     href: '/quran',
     icon: 'book' as const,
     title: 'QuranVoice Reader',
     body: 'Premium card reader — translation, tafsir, and audio per ayah.',
     status: 'Available',
+  },
+  {
+    href: '/tajweed-quran',
+    icon: 'sparkle' as const,
+    title: 'Tajweed Quran',
+    body: 'Color-coded Tajweed rules from the source — activates with verified Tajweed data.',
+    status: 'Requires data',
+  },
+  {
+    href: '/8-line-quran',
+    icon: 'feather' as const,
+    title: '8-line Mushaf',
+    body: 'Classical 8-line per-page layout. Not provided by the connected source — shown only with verified line-break data.',
+    status: 'Requires data',
+  },
+  {
+    href: '/12-line-quran',
+    icon: 'feather' as const,
+    title: '12-line Mushaf',
+    body: 'Classical 12-line per-page layout. Not provided by the connected source — shown only with verified line-break data.',
+    status: 'Requires data',
   },
 ];
 
@@ -83,7 +83,7 @@ export default function MushafIndex() {
                     className={`rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${
                       s.status === 'Available'
                         ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200'
-                        : 'border-cream-200/20 bg-ink-700/40 text-cream-200/70'
+                        : 'border-gold-500/30 bg-gold-500/5 text-gold-200/85'
                     }`}
                   >
                     {s.status}
