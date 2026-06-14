@@ -219,6 +219,21 @@
   .tajweed-text tajweed[class~='iqlab'] { color: #26bffd; }
   .tajweed-text tajweed[class~='ghunnah'] { color: #ff7e1e; }
 
+  /* Word-level recitation highlight (driven by real QF segment timing).
+     Keeps the Arabic letter colour so shaping/tashkeel stay readable in both
+     themes; only adds a soft gold box on the word currently being recited. */
+  .word-active {
+    background: rgb(var(--gold-500) / 0.22);
+    border-radius: 0.32em;
+    box-shadow: 0 0 0 0.1em rgb(var(--gold-500) / 0.22), 0 0 18px -4px rgb(var(--gold-500) / 0.5);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition: background 120ms ease;
+  }
+  .word-done {
+    opacity: 0.62;
+  }
+
   /* Ornamental verse-end marker (number rendered inside). */
   .ayah-marker {
     display: inline-flex;

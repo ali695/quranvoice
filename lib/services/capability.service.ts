@@ -31,7 +31,7 @@ import {
   type RawFoundationTafsir,
   type RawFoundationTranslation,
 } from '@/lib/quran-foundation/resource-mappers';
-import { getAyahAudioFile } from '@/lib/services/audioService';
+import { getAyahAudioFile, getAyahTiming } from '@/lib/services/audioService';
 import {
   getFallbackEditionCount,
   getFallbackLanguages,
@@ -90,12 +90,15 @@ async function probeFoundation(fallback: FallbackTafsirInfo): Promise<Capabiliti
   // Per-ayah audio probe — reciter 7 (Mishary on the Foundation) for the
   // probe verse. Confirms exact-ayah audio (vs surah-only) is real.
   let ayahAudioAvailable = false;
+  let wordTimingAvailable = false;
   if (recitationCount > 0) {
     try {
       const file = await getAyahAudioFile('7', PROBE_VERSE_KEY);
       ayahAudioAvailable = Boolean(file?.url);
+      const timing = await getAyahTiming('7', PROBE_VERSE_KEY);
+      wordTimingAvailable = Boolean(timing?.segments?.length);
     } catch {
-      ayahAudioAvailable = false;
+      /* leave false */
     }
   }
 
@@ -112,6 +115,7 @@ async function probeFoundation(fallback: FallbackTafsirInfo): Promise<Capabiliti
     fallbackTafsirLanguages: fallback.languages,
     recitationCount,
     ayahAudioAvailable,
+    wordTimingAvailable,
     // Review-gated / mapping features are resolved per-verse by their own
     // services and components; the global snapshot stays honest about them.
     asbabAvailable: false,
@@ -164,6 +168,7 @@ async function probeAlquranCloud(fallback: FallbackTafsirInfo): Promise<Capabili
     fallbackTafsirLanguages: fallback.languages,
     recitationCount: audioEditions.length,
     ayahAudioAvailable: audioEditions.some((e) => e.type === 'versebyverse'),
+    wordTimingAvailable: false,
     asbabAvailable: false,
     shanENuzoolAvailable: false,
     relatedAyahsAvailable: false,

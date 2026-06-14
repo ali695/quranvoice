@@ -49,6 +49,8 @@ export interface CapabilityProbeInput {
   recitationCount: number;
   /** True when a per-ayah audio file was actually returned for the probe. */
   ayahAudioAvailable: boolean;
+  /** True when real per-word segment timing was returned for the probe. */
+  wordTimingAvailable: boolean;
   /** Review-gated / mapping features resolved by their own services. */
   asbabAvailable: boolean;
   shanENuzoolAvailable: boolean;
@@ -134,6 +136,7 @@ export function deriveCapabilities(input: CapabilityProbeInput): Capabilities {
     hasAudio: recitations,
     recitationCount: input.recitationCount,
     hasAyahAudio: input.ayahAudioAvailable,
+    hasWordTiming: input.wordTimingAvailable,
 
     hasWordByWord: wordByWord,
     hasWordTranslation: wordTranslation,
@@ -214,6 +217,7 @@ export function emptyCapabilities(): Capabilities {
     fallbackTafsirLanguages: [],
     recitationCount: 0,
     ayahAudioAvailable: false,
+    wordTimingAvailable: false,
     asbabAvailable: false,
     shanENuzoolAvailable: false,
     relatedAyahsAvailable: false,

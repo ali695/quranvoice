@@ -13,6 +13,7 @@ import {
 import type { RepeatMode } from '@/lib/types/audio';
 import { loadSettings, updateSettings } from '@/lib/services/settingsService';
 import { getSurahByNumber } from '@/lib/data/surahs';
+import { activeWordPosition, type Segment } from '@/lib/audio/audio-timing';
 
 type PlayMode = 'ayah' | 'surah' | 'range';
 
@@ -46,6 +47,10 @@ interface AudioPlayerContextValue {
   queue: QueueItem[];
   /** True when the active audio is exact per-ayah (not a seek over surah). */
   exactTimingAvailable: boolean;
+  /** True when real word-level segment timing is driving the highlight. */
+  exactWordTimingAvailable: boolean;
+  /** Active word position (1-based) within the current ayah, or null. */
+  currentWordIndex: number | null;
   /** Transient user-facing message (e.g. exact timing unavailable). */
   notice: string | null;
   reciterId: string;
@@ -95,6 +100,29 @@ async function resolveAyahAudio(
   }
 }
 
+interface AyahTiming {
+  url: string;
+  segments: Segment[];
+}
+
+/** Fetch per-ayah audio URL + word-level segment timing (QF reciters only). */
+async function resolveAyahTiming(
+  reciterId: string,
+  verseKey: string,
+): Promise<AyahTiming | null> {
+  try {
+    const res = await fetch(
+      `/api/quran/audio/${encodeURIComponent(reciterId)}/timing/${encodeURIComponent(verseKey)}`,
+    );
+    if (!res.ok) return null;
+    const json = (await res.json()) as { data?: { url?: string; segments?: Segment[] } };
+    if (!json.data?.url) return null;
+    return { url: json.data.url, segments: json.data.segments ?? [] };
+  } catch {
+    return null;
+  }
+}
+
 async function resolveSurahAudio(reciterId: string, surah: number): Promise<string | null> {
   try {
     const res = await fetch(
@@ -122,7 +150,12 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<PlayMode>('ayah');
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [exactTimingAvailable, setExactTimingAvailable] = useState(false);
+  const [exactWordTimingAvailable, setExactWordTimingAvailable] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState<number | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  // Word-level segments for the active ayah (empty = ayah-level only).
+  const segmentsRef = useRef<Segment[]>([]);
 
   // Latest-value refs so the static "ended" listener can advance correctly.
   const reciterIdRef = useRef(reciterId);
@@ -165,19 +198,37 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       setNotice(null);
       setNow({ reciterId: rid, reciterName, surah, ayah, verseKey, surahLabel });
       setIsLoading(true);
+      // Reset word highlighting for the new ayah.
+      segmentsRef.current = [];
+      setCurrentWordIndex(null);
+
+      // 1) Prefer the Quran.Foundation audio with word-level segment timing.
+      const timing = await resolveAyahTiming(rid, verseKey);
+      if (timing) {
+        segmentsRef.current = timing.segments;
+        setExactTimingAvailable(true);
+        setExactWordTimingAvailable(timing.segments.length > 0);
+        playUrl(timing.url);
+        return;
+      }
+
+      // 2) Fall back to plain per-ayah audio (ayah-level highlight only).
       const resolved = await resolveAyahAudio(rid, verseKey);
       if (resolved) {
         setExactTimingAvailable(true);
+        setExactWordTimingAvailable(false);
         playUrl(resolved.url);
-      } else {
-        // No exact ayah audio — never fake a seek over a surah file.
-        setExactTimingAvailable(false);
-        setIsLoading(false);
-        setIsPlaying(false);
-        setNotice(
-          'Exact verse audio is not available for this reciter. Choose another reciter or play the full surah.',
-        );
+        return;
       }
+
+      // 3) No exact ayah audio — never fake a seek over a surah file.
+      setExactTimingAvailable(false);
+      setExactWordTimingAvailable(false);
+      setIsLoading(false);
+      setIsPlaying(false);
+      setNotice(
+        'Exact verse audio is not available for this reciter. Choose another reciter or play the full surah.',
+      );
     },
     [playUrl],
   );
@@ -230,7 +281,19 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
     const el = new Audio();
     el.preload = 'metadata';
     audioRef.current = el;
-    const onTime = () => setCurrentTime(el.currentTime);
+    let lastWord: number | null = null;
+    const onTime = () => {
+      setCurrentTime(el.currentTime);
+      // Drive word highlighting from real segment timing (ms).
+      const segs = segmentsRef.current;
+      if (segs.length) {
+        const w = activeWordPosition(segs, el.currentTime * 1000);
+        if (w !== lastWord) {
+          lastWord = w;
+          setCurrentWordIndex(w);
+        }
+      }
+    };
     const onLoadedMeta = () => setDuration(el.duration || 0);
     const onPlay = () => {
       setIsPlaying(true);
@@ -368,6 +431,8 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       mode,
       queue,
       exactTimingAvailable,
+      exactWordTimingAvailable,
+      currentWordIndex,
       notice,
       reciterId,
       setReciter,
@@ -396,6 +461,8 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       mode,
       queue,
       exactTimingAvailable,
+      exactWordTimingAvailable,
+      currentWordIndex,
       notice,
       reciterId,
       setReciter,

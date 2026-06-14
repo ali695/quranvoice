@@ -267,3 +267,64 @@ export async function getAyahAudioFile(
 }
 
 export const featuredReciters = FEATURED_RECITERS;
+
+// ─────────────────────────────────────────────────────────────────────────
+// Word-level timing (Quran.Foundation segment data)
+// ─────────────────────────────────────────────────────────────────────────
+
+/** Map common AlQuran-Cloud reciter ids → Quran.Foundation numeric ids so
+ *  word-level segment timing works for the default reciters. */
+const QF_RECITER_MAP: Record<string, number> = {
+  'ar.alafasy': 7,
+  'ar.husary': 6,
+  'ar.husarymujawwad': 6,
+  'ar.abdulbasitmurattal': 1,
+  'ar.abdurrahmansudais': 3,
+  'ar.sudais': 3,
+  'ar.shaatree': 4,
+  'ar.minshawi': 8,
+  'ar.minshawimujawwad': 9,
+};
+
+const QF_AUDIO_CDN = 'https://verses.quran.foundation/';
+
+/** Resolve a reciter id to a Quran.Foundation numeric id, or null. */
+export function resolveQfReciterId(reciterId: string): number | null {
+  if (/^\d+$/.test(reciterId)) return Number(reciterId);
+  return QF_RECITER_MAP[reciterId] ?? null;
+}
+
+interface FoundationVerseAudio {
+  verse?: {
+    audio?: { url?: string; segments?: Array<[number, number, number, number]> };
+  };
+}
+
+export interface AyahTimingResult {
+  url: string;
+  segments: Array<[number, number, number, number]>;
+  reciterId: number;
+}
+
+/**
+ * Per-verse audio URL + word-level segment timing for a Quran.Foundation
+ * reciter. Returns null when the reciter has no QF mapping or no segments
+ * (callers then use ayah-level highlighting only). Never synthesizes timing.
+ */
+export async function getAyahTiming(
+  reciterId: string,
+  verseKey: string,
+): Promise<AyahTimingResult | null> {
+  if (!isFoundationConfigured()) return null;
+  const qfId = resolveQfReciterId(reciterId);
+  if (qfId === null) return null;
+  const json = await foundationFetch<FoundationVerseAudio>(
+    F.verseWithAudio(verseKey, qfId),
+    { revalidate: 86_400 },
+  );
+  const audio = json?.verse?.audio;
+  if (!audio?.url) return null;
+  const segments = Array.isArray(audio.segments) ? audio.segments : [];
+  const url = audio.url.startsWith('http') ? audio.url : `${QF_AUDIO_CDN}${audio.url}`;
+  return { url, segments, reciterId: qfId };
+}

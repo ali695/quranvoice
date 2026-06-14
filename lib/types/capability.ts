@@ -67,6 +67,8 @@ export interface Capabilities {
   recitationCount: number;
   /** Per-ayah audio files (vs surah-only) are available. */
   hasAyahAudio: boolean;
+  /** Real per-word recitation segment timing is available (for the default reciter). */
+  hasWordTiming: boolean;
 
   // ── Word by word ─────────────────────────────────────────────────
   hasWordByWord: boolean;

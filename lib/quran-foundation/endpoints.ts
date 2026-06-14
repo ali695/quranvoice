@@ -87,6 +87,13 @@ export const F = {
   /** GET — single verse audio */
   ayahAudioForVerse: (recitationId: string | number, verseKey: string) =>
     `${FOUNDATION_BASE_PATH}/recitations/${recitationId}/by_ayah/${encodeURIComponent(verseKey)}`,
+  /**
+   * GET — a verse with its recitation audio + word-level segment timing.
+   * The verse's `audio.segments` are [segIdx, wordPos, startMs, endMs].
+   */
+  verseWithAudio: (verseKey: string, recitationId: number) =>
+    `${FOUNDATION_BASE_PATH}/verses/by_key/${encodeURIComponent(verseKey)}?` +
+    `audio=${recitationId}&fields=text_uthmani`,
   /** GET — supported translation/tafsir languages */
   languages: () => `${FOUNDATION_BASE_PATH}/resources/languages`,
   /** GET — keyword search across translations/text */
