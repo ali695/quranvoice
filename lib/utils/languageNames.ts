@@ -63,6 +63,20 @@ function getDisplayNames(): Intl.DisplayNames | null {
   return displayNames;
 }
 
+const NAME_TO_ISO: Record<string, string> = Object.fromEntries(
+  Object.entries(FALLBACK).map(([iso, name]) => [name.toLowerCase(), iso]),
+);
+
+/** Reverse lookup: a language name (e.g. "urdu") → ISO code ("ur"), else ''. */
+export function isoFromLanguageName(name: string | undefined): string {
+  const n = (name || '').toLowerCase().trim();
+  if (!n) return '';
+  if (NAME_TO_ISO[n]) return NAME_TO_ISO[n];
+  // Already an ISO code?
+  if (/^[a-z]{2,3}$/.test(n) && FALLBACK[n]) return n;
+  return '';
+}
+
 /** English display name for an ISO-639 language code (e.g. "ur" → "Urdu"). */
 export function languageName(iso: string): string {
   const code = (iso || '').toLowerCase().trim();

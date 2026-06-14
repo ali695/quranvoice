@@ -51,13 +51,12 @@ async function getEditionBySlug(slug: string): Promise<Spa5kEdition | null> {
   return editions.find((e) => e.slug === slug) ?? null;
 }
 
-/** First edition matching a language (by ISO slug prefix) — per-language default. */
-async function getDefaultEditionForLanguage(language: string): Promise<Spa5kEdition | null> {
+/** Editions matching a language (by ISO slug prefix), in catalog order. */
+async function editionsForLanguage(language: string): Promise<Spa5kEdition[]> {
   const editions = await getEditions();
   const lang = normalizeLanguage(language);
-  return (
-    editions.find((e) => (isoFromSlug(e.slug) || normalizeLanguage(e.language_name)) === lang) ??
-    null
+  return editions.filter(
+    (e) => (isoFromSlug(e.slug) || normalizeLanguage(e.language_name)) === lang,
   );
 }
 
@@ -73,15 +72,21 @@ export async function getFallbackTafsirForVerse(
   return mapVerseToNormalized({ edition, verse });
 }
 
-/** Fallback tafsir for a verse using the best edition for a language. */
+/**
+ * Fallback tafsir for a verse using the best edition for a language. Tries
+ * editions in order until one actually has content for the verse (some
+ * editions have gaps), so a language with any coverage resolves.
+ */
 export async function getDefaultFallbackTafsirForVerse(
   language: string,
   surah: number,
   ayah: number,
 ): Promise<NormalizedTafsir | null> {
-  const edition = await getDefaultEditionForLanguage(language);
-  if (!edition) return null;
-  const verse = await fetchFallbackVerse(edition.slug, surah, ayah);
-  if (!verse) return null;
-  return mapVerseToNormalized({ edition, verse });
+  const editions = await editionsForLanguage(language);
+  for (const edition of editions.slice(0, 6)) {
+    const verse = await fetchFallbackVerse(edition.slug, surah, ayah);
+    const mapped = verse ? mapVerseToNormalized({ edition, verse }) : null;
+    if (mapped?.content) return mapped;
+  }
+  return null;
 }

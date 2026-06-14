@@ -12,6 +12,8 @@ import { getResourcesByType } from '@/lib/data/resourceRegistry';
 import { foundationFetch } from '@/lib/quran-foundation/client';
 import { F } from '@/lib/quran-foundation/endpoints';
 import { isFoundationConfigured } from '@/lib/quran-foundation/env';
+import { isoFromSlug } from '@/lib/tafsir/spa5k-mappers';
+import { isoFromLanguageName, languageName } from '@/lib/utils/languageNames';
 import type { TafsirEntry, TafsirResource } from '@/lib/types/tafsir';
 
 interface FoundationTafsirResource {
@@ -50,18 +52,28 @@ export async function listTafsirs(language = 'en'): Promise<TafsirResource[]> {
       { revalidate: 86_400 },
     );
     if (json?.tafsirs?.length) {
-      return json.tafsirs.map<TafsirResource>((t) => ({
-        id: t.id,
-        name: t.name,
-        authorName: t.author_name ?? t.name,
-        language: t.iso ?? t.language_iso ?? language,
-        languageName: t.language_name ?? language,
-        source: {
-          name: 'Quran.Foundation tafsir catalog',
-          url: 'https://api-docs.quran.foundation/',
-          verified: true,
-        },
-      }));
+      return json.tafsirs.map<TafsirResource>((t) => {
+        // QF's `?language=` param controls NAME translation, not which tafsirs
+        // are returned — so derive each tafsir's REAL content language from its
+        // slug prefix ("ur-tafsir-…", "ar-…"), else iso, else language_name.
+        const iso =
+          isoFromSlug(t.slug ?? '') ||
+          (t.iso ?? t.language_iso ?? '').toLowerCase() ||
+          isoFromLanguageName(t.language_name) ||
+          'ar';
+        return {
+          id: t.id,
+          name: t.name,
+          authorName: t.author_name ?? t.name,
+          language: iso,
+          languageName: t.language_name ?? languageName(iso),
+          source: {
+            name: 'Quran.Foundation tafsir catalog',
+            url: 'https://api-docs.quran.foundation/',
+            verified: true,
+          },
+        };
+      });
     }
   }
 

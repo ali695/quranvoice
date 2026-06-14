@@ -49,8 +49,11 @@ async function qfTafsir(
 
 /** Default Quran.Foundation tafsir id for a language (else first overall). */
 async function defaultQfTafsirId(language: string): Promise<number | null> {
-  const inLang = await listTafsirs(language);
-  const pick = inLang[0] ?? (await listTafsirs('en'))[0];
+  const all = await listTafsirs(language);
+  const lang = language.toLowerCase();
+  // listTafsirs returns the full catalog (QF ignores the language filter), so
+  // filter by each tafsir's REAL content language.
+  const pick = all.find((t) => t.language === lang) ?? all[0];
   if (!pick) return null;
   return /^\d+$/.test(String(pick.id)) ? Number(pick.id) : null;
 }
@@ -105,10 +108,14 @@ export async function listAllTafsirResources(
   language?: string,
   includeFallback = true,
 ): Promise<GroupedTafsirResources> {
-  const [qf, fb] = await Promise.all([
+  const [qfAll, fb] = await Promise.all([
     listTafsirs(language ?? 'en'),
     includeFallback ? listFallbackEditions(language) : Promise.resolve([]),
   ]);
+  // QF returns the full catalog regardless of the language param — filter by
+  // each tafsir's real content language when one is requested.
+  const lang = language?.toLowerCase();
+  const qf = lang ? qfAll.filter((t) => t.language === lang) : qfAll;
   const quranFoundation = qf.map((t) => ({ ...t, provider: 'quran_foundation' as const, isFallback: false }));
   return { quranFoundation, fallback: fb };
 }

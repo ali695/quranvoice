@@ -75,13 +75,20 @@ export function mapTranslationResources(
   });
 }
 
+/** ISO from a slug prefix ("ur-tafsir-…" → "ur"). */
+function slugIso(slug: string | undefined): string {
+  const p = (slug ?? '').split('-')[0]?.toLowerCase() ?? '';
+  return /^[a-z]{2,3}$/.test(p) ? p : '';
+}
+
 export function mapTafsirResources(
   raw: RawFoundationTafsir[] | undefined,
   fallbackLang = 'en',
 ): TafsirResource[] {
   if (!raw?.length) return [];
   return raw.map<TafsirResource>((t) => {
-    const iso = (t.iso || t.language_iso || fallbackLang).toLowerCase();
+    // QF's language param doesn't filter — derive real language from the slug.
+    const iso = slugIso(t.slug) || (t.iso || t.language_iso || fallbackLang).toLowerCase();
     return {
       id: t.id,
       name: t.name,
