@@ -8,6 +8,8 @@ import { Footer } from '@/components/layout/Footer';
 import { Header } from '@/components/layout/Header';
 import { HreflangLinks } from '@/components/layout/HreflangLinks';
 import { SuppressExtensionWarnings } from '@/components/layout/SuppressExtensionWarnings';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { organizationSchema, webApplicationSchema, websiteSchema } from '@/lib/seo/schema';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { LocaleProvider } from '@/lib/i18n/context';
 import { getLocaleDirection } from '@/lib/i18n/locales';
@@ -109,6 +111,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* hreflang alternates for every supported locale */}
         <HreflangLinks />
         <script dangerouslySetInnerHTML={{ __html: NO_FLASH_THEME }} />
+        {/* Site-wide structured data (WebSite + SearchAction, Org, WebApp) */}
+        <JsonLd data={[websiteSchema(), organizationSchema(), webApplicationSchema()]} />
       </head>
       <body
         className="min-h-screen bg-ink-900 text-cream-100 antialiased"

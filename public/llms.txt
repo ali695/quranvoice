@@ -1,0 +1,29 @@
+# QuranVoice
+
+> A modern platform to read, listen to, and study the Noble Quran online — verified Arabic text, translations in many languages, tafsir, word-by-word, Tajweed, Mushaf layouts, recitations, and memorization tools.
+
+## Content & source policy
+- Primary verified source for all Quranic content: Quran.Foundation (https://quran.foundation).
+- Tafsir: Quran.Foundation first; the open spa5k/tafsir_api is used only as a clearly-labelled fallback.
+- QuranVoice does NOT generate Quran, tafsir, Tajweed, hadith, Asbab al-Nuzul, Shan-e-Nuzool, du'a, or historical content with AI.
+- Every block of source-sensitive content carries a visible source label.
+- Arabic Quran text is rendered exactly as published; app UI language is separate from the Quran translation language.
+
+## Main public sections
+- /quran — Quran reader (all 114 surahs), e.g. /quran/2/255
+- /surahs — surah directory · /juz — by juz · /pages — Mushaf pages
+- /translations — translations in many languages (incl. Urdu, Arabic, Indonesian, Turkish…)
+- /tafsir — verse-by-verse tafsir (Quran.Foundation + labelled fallback)
+- /recitations and /reciters — audio recitations with word-level highlighting where timing exists
+- /word-by-word — per-word Arabic, transliteration, meaning
+- /mushaf, /uthmani-quran, /tajweed-quran, /16-line-quran — Mushaf layouts and color-coded Tajweed
+- /ayah-of-the-day — daily verse
+- /search — navigation search (surah / ayah / juz / page / Ayatul Kursi …)
+- /learn — Islamic learning library · /tools — Qibla, prayer times, Hijri calendar
+- /sources — full source & attribution transparency
+
+## Languages
+en, ar, ur, hi, bn, id, tr, de, fr, es, it, ru, fa, ms, zh, ja, ko (e.g. /ur/quran, /de/quran).
+
+## Not for indexing
+Private user pages (/profile, /bookmarks, /notes, /goals, /settings), API routes, and the OAuth callback.

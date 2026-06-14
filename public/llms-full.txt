@@ -1,0 +1,40 @@
+# QuranVoice — full reference
+
+> QuranVoice is a modern web platform to read, listen to, and study the Noble Quran. It serves verified Arabic Quran text, translations in many languages, tafsir (commentary), word-by-word breakdowns, Tajweed coloring, multiple Mushaf layouts, recitations with word-level highlighting, memorization tools, and Islamic learning content. It is mobile-responsive with light (White Gold) and dark (Dark Gold) themes.
+
+## Source transparency & content policy
+- **Primary source:** Quran.Foundation Content API (https://api-docs.quran.foundation) for Quran text, translations, tafsir, word-by-word, recitations and word-level audio timing.
+- **Tafsir fallback:** spa5k/tafsir_api (open editions) is used ONLY when Quran.Foundation has no tafsir for a verse/language, and is always shown with a "Fallback source" label.
+- **No AI-generated religious content.** QuranVoice never fabricates Quran, tafsir, Tajweed rules, hadith, Asbab al-Nuzul, Shan-e-Nuzool, du'a, Kalima, or historical (Waqāʾiʿ/Ghazawāt) content.
+- **Review-gated content:** Asbab/Shan-e-Nuzool are displayed only after source review; otherwise an "awaiting reviewed source" state is shown.
+- **Separation of concerns:** the app UI language is independent of the Quran translation language and the tafsir language.
+
+## Capabilities
+- Quran reader with Uthmani text, optional simplified/Imlaei scripts, and a color-coded Tajweed Mushaf (from text_uthmani_tajweed).
+- Page-by-page Mushaf with real printed line layout (15-line Madani, 16-line Indo-Pak).
+- Translations across ~80 languages; multiple translations stackable per ayah with translator labels.
+- Tafsir per verse with a source selector (Quran.Foundation + labelled fallback) in many languages including Urdu, Arabic, English.
+- Word-by-word data, and word-level audio highlighting synced to real recitation segment timing when available (ayah-level fallback otherwise).
+- Click-to-listen at the ayah level, "Play surah", "Play from here", repeat, and auto-advance.
+- Navigation search that works without full-text scope: "2:255", "2 255", "Al-Baqarah", "البقرة", "Ayatul Kursi", "Juz 3", "Page 42".
+
+## Key routes
+- Home: /
+- Reader: /quran, /quran/{surah}, /quran/{surah}/{ayah}
+- Directory: /surahs, /juz, /juz/{n}, /pages, /pages/{n}
+- Translations: /translations, /translations/{id}
+- Tafsir: /tafsir, /tafsir/{id}
+- Recitations: /recitations, /reciters, /reciters/{id}, /audio
+- Mushaf: /mushaf, /uthmani-quran, /tajweed-quran, /16-line-quran
+- Study: /word-by-word, /study, /study/{surah}/{ayah}, /ayah-of-the-day
+- Search: /search
+- Learn: /learn and sub-topics (e.g. /learn/quranic-duas, /learn/hajj-and-umrah)
+- Tools: /tools, /tools/qibla, /tools/prayer-times, /tools/hijri-calendar
+- Transparency: /sources
+
+## Localization
+Supported app languages: en, ar, ur, hi, bn, id, tr, de, fr, es, it, ru, fa, ms, zh, ja, ko.
+Localized routes use a locale prefix for non-English, e.g. /ur/quran, /de/quran, /ar/quran. RTL is applied for ar, ur, fa.
+
+## Excluded from indexing
+Private/user pages (/profile, /bookmarks, /notes, /goals, /progress, /collections, /settings), all /api/ routes, the OAuth callback (/auth/callback), and the dev-only OAuth tester.
