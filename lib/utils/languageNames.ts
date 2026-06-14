@@ -77,12 +77,30 @@ export function isoFromLanguageName(name: string | undefined): string {
   return '';
 }
 
-/** English display name for an ISO-639 language code (e.g. "ur" → "Urdu"). */
-export function languageName(iso: string): string {
-  const code = (iso || '').toLowerCase().trim();
-  if (!code) return 'Unknown';
-  const dn = getDisplayNames();
-  const resolved = dn?.of(code);
-  if (resolved && resolved.toLowerCase() !== code) return resolved;
-  return FALLBACK[code] ?? code.toUpperCase();
+function titleCase(s: string): string {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+}
+
+/**
+ * English display name for a language code/name. Robust: accepts ISO codes
+ * ("ur") AND full names ("urdu"), and NEVER throws — `Intl.DisplayNames.of()`
+ * raises a RangeError on invalid subtags (e.g. "english"), so we only call it
+ * for plausibly-valid codes and guard it with try/catch.
+ */
+export function languageName(input: string): string {
+  const raw = (input || '').toLowerCase().trim();
+  if (!raw) return 'Unknown';
+  // Full name like "english" / "arabic" → ISO, else keep as-is.
+  const code = NAME_TO_ISO[raw] || raw;
+  if (FALLBACK[code]) return FALLBACK[code];
+  // Only ask Intl for a structurally-valid language subtag.
+  if (/^[a-z]{2,3}(-[a-z0-9]{2,8})*$/.test(code)) {
+    try {
+      const resolved = getDisplayNames()?.of(code);
+      if (resolved && resolved.toLowerCase() !== code) return resolved;
+    } catch {
+      /* invalid subtag — fall through */
+    }
+  }
+  return titleCase(raw);
 }
