@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Icon } from '@/components/ui/Icon';
 import { Logo } from '@/components/ui/Logo';
 import { LanguageSelector } from '@/components/layout/LanguageSelector';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { FOOTER_LINKS } from '@/lib/data/footerLinks';
 
 const COLUMNS: { title: string; key: keyof typeof FOOTER_LINKS }[] = [
@@ -23,8 +24,8 @@ const SOCIAL = [
 
 export function Footer() {
   return (
-    <footer className="relative mt-24 border-t border-ink-600/50 bg-ink-950">
-      <div className="absolute inset-0 pattern-ornament opacity-30" aria-hidden="true" />
+    <footer className="footer-surface relative mt-24 border-t border-ink-600/50">
+      <div className="absolute inset-0 pattern-ornament opacity-20" aria-hidden="true" />
       <div className="relative">
         <div className="container-page py-16">
           {/* Top: brand + columns */}
@@ -32,13 +33,13 @@ export function Footer() {
             {/* Brand column */}
             <div className="col-span-2 sm:col-span-3 lg:col-span-4">
               <Logo size="md" />
-              <p className="mt-5 max-w-sm text-sm leading-relaxed text-cream-200/60">
+              <p className="mt-5 max-w-sm text-[0.95rem] font-medium leading-relaxed text-cream-100/90">
                 A modern Quran platform built to help Muslims read, listen, reflect,
                 memorize, and stay connected with the Book of Allah.
               </p>
-              <div className="mt-6 rounded-xl border border-ink-600/60 bg-ink-800/40 p-4">
-                <p className="text-xs leading-relaxed text-cream-200/55">
-                  <span className="font-medium text-gold-300/90">Disclaimer.</span>{' '}
+              <div className="mt-6 rounded-xl border border-ink-600/60 bg-ink-800/50 p-4">
+                <p className="text-[0.8rem] leading-relaxed text-cream-100/80">
+                  <span className="font-semibold text-gold-400">Disclaimer.</span>{' '}
                   Independent Quran learning platform. All Quran content must be
                   sourced from verified resources.
                 </p>
@@ -67,10 +68,10 @@ export function Footer() {
           {/* Bottom row */}
           <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col gap-1">
-              <p className="text-sm text-cream-200/70">
+              <p className="text-sm font-medium text-cream-100/85">
                 © {new Date().getFullYear()} QuranVoice. All rights reserved.
               </p>
-              <p className="text-xs italic text-cream-200/45">
+              <p className="text-xs italic text-cream-200/60">
                 Made to serve the Quran with care and respect.
               </p>
             </div>
@@ -78,15 +79,8 @@ export function Footer() {
             <div className="flex flex-wrap items-center gap-3">
               {/* Language selector */}
               <LanguageSelector variant="full" />
-              {/* Theme selector */}
-              <button
-                type="button"
-                className="inline-flex h-9 items-center gap-2 rounded-lg border border-ink-600 bg-ink-800/60 px-3 text-xs text-cream-100/80 hover:border-gold-500/40"
-                aria-label="Theme: Dark"
-              >
-                <Icon name="moon" size={14} />
-                Dark
-              </button>
+              {/* Real theme switcher */}
+              <ThemeToggle compact />
               {/* Socials */}
               <div className="flex items-center gap-1">
                 {SOCIAL.map((s) => (
@@ -116,7 +110,7 @@ interface FooterColumnProps {
 function FooterColumn({ title, links }: FooterColumnProps) {
   return (
     <div className="lg:col-span-2">
-      <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-gold-400/90">
+      <h3 className="mb-4 text-xs font-bold uppercase tracking-[0.16em] text-gold-400">
         {title}
       </h3>
       <ul className="flex flex-col gap-2.5">
@@ -124,7 +118,7 @@ function FooterColumn({ title, links }: FooterColumnProps) {
           <li key={link.href + link.label}>
             <Link
               href={link.href}
-              className="text-sm text-cream-200/65 transition-colors hover:text-gold-300"
+              className="text-sm font-medium text-cream-100/80 transition-colors hover:text-gold-400"
             >
               {link.label}
             </Link>

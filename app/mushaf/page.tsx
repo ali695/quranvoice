@@ -43,8 +43,8 @@ const STYLES = [
     href: '/tajweed-quran',
     icon: 'sparkle' as const,
     title: 'Tajweed Quran',
-    body: 'Color-coded Tajweed rules from the source — activates with verified Tajweed data.',
-    status: 'Requires data',
+    body: 'Color-coded Tajweed rules rendered from Quran.Foundation’s verified text_uthmani_tajweed.',
+    status: 'Available',
   },
   {
     href: '/8-line-quran',
