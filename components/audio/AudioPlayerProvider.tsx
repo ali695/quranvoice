@@ -329,6 +329,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   }, [playbackSpeed]);
 
   const setReciter = useCallback((id: string, name?: string) => {
+    reciterIdRef.current = id; // update immediately so a following play() uses it
     setReciterIdState(id);
     updateSettings('audio', { defaultReciterId: id });
     setNow((cur) => (cur ? { ...cur, reciterId: id, reciterName: name ?? cur.reciterName } : cur));

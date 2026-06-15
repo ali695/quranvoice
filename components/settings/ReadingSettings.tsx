@@ -230,7 +230,7 @@ function CapabilitySelect({
   const cur = options.find((o) => o.value === value);
   const showReason = cur && !cur.enabled && cur.reason;
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex min-w-0 flex-col gap-1.5">
       <label className="text-xs font-medium uppercase tracking-wider text-cream-200/70">{label}</label>
       <select
         value={value}
@@ -239,7 +239,7 @@ function CapabilitySelect({
           if (!next || !next.enabled) return;
           onChange(e.target.value);
         }}
-        className="h-11 appearance-none rounded-xl border border-ink-600/70 bg-ink-800/70 px-4 pr-10 text-sm text-cream-50 focus:border-gold-500/50 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
+        className="h-11 w-full min-w-0 max-w-full truncate appearance-none rounded-xl border border-ink-600/70 bg-ink-800/70 px-4 pr-10 text-sm text-cream-50 focus:border-gold-500/50 focus:outline-none focus:ring-2 focus:ring-gold-500/20"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value} disabled={!o.enabled} className="bg-ink-900 text-cream-50">
