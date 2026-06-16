@@ -50,15 +50,15 @@ const STYLES = [
     href: '/8-line-quran',
     icon: 'feather' as const,
     title: '8-line Mushaf',
-    body: 'Classical 8-line per-page layout. Not provided by the connected source — shown only with verified line-break data.',
-    status: 'Requires data',
+    body: 'About the spacious classical 8-line layout, with the verified page-by-page Mushaf to read alongside it.',
+    status: 'Available',
   },
   {
     href: '/12-line-quran',
     icon: 'feather' as const,
     title: '12-line Mushaf',
-    body: 'Classical 12-line per-page layout. Not provided by the connected source — shown only with verified line-break data.',
-    status: 'Requires data',
+    body: 'About the balanced classical 12-line layout, with the verified page-by-page Mushaf to read alongside it.',
+    status: 'Available',
   },
 ];
 
@@ -68,7 +68,7 @@ export default function MushafIndex() {
       <PageHeader
         eyebrow="Mushaf"
         title="Choose how you read the Mushaf"
-        description="QuranVoice supports the standard reader plus classical mushaf layouts. Layout-specific styles activate once verified line-break data is connected — we never fake page breaks."
+        description="Read the Quran the way that suits you — the premium card reader, the printed page-by-page Mushaf with real line breaks, the Uthmani script, or color-coded Tajweed."
       />
       <AppShell>
         <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

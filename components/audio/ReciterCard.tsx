@@ -49,11 +49,12 @@ export function ReciterCard({ reciter, index = 0 }: ReciterCardProps) {
           </p>
         )}
         <p className="mt-1 text-xs text-cream-200/55">
-          {reciter.style ?? 'Recitation'} ·{' '}
-          {reciter.source.verified ? (
-            <span className="text-gold-300/80">Verified source</span>
-          ) : (
-            <span className="text-cream-200/45">Source pending</span>
+          {reciter.style ?? 'Recitation'}
+          {reciter.source.verified && (
+            <>
+              {' · '}
+              <span className="text-gold-300/80">Verified source</span>
+            </>
           )}
         </p>
         <div className="mt-3">

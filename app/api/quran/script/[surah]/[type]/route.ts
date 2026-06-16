@@ -3,7 +3,7 @@ import { getSurahScript, type ScriptType } from '@/lib/services/scriptService';
 
 export const revalidate = 86400;
 
-const VALID: ScriptType[] = ['imlaei', 'uthmani_simple'];
+const VALID: ScriptType[] = ['uthmani', 'imlaei', 'uthmani_simple'];
 
 export async function GET(
   _req: Request,

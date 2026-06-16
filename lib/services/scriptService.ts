@@ -1,16 +1,17 @@
 /**
- * ScriptService — server-only. Returns alternate Quran scripts for a surah
- * (Imlaei or simplified Uthmani) from Quran.Foundation. Tajweed text has its
- * own service (tajweedService). Never alters the text.
+ * ScriptService — server-only. Returns Quran scripts for a surah
+ * (Uthmani, Imlaei, or simplified Uthmani) from Quran.Foundation. Tajweed text
+ * has its own service (tajweedService). Never alters the text.
  */
 
 import { foundationFetch } from '@/lib/quran-foundation/client';
 import { F } from '@/lib/quran-foundation/endpoints';
 import { isFoundationConfigured } from '@/lib/quran-foundation/env';
 
-export type ScriptType = 'imlaei' | 'uthmani_simple';
+export type ScriptType = 'uthmani' | 'imlaei' | 'uthmani_simple';
 
 const FIELD: Record<ScriptType, string> = {
+  uthmani: 'text_uthmani',
   imlaei: 'text_imlaei',
   uthmani_simple: 'text_uthmani_simple',
 };
@@ -18,6 +19,7 @@ const FIELD: Record<ScriptType, string> = {
 interface FVerse {
   verse_number?: number;
   verse_key?: string;
+  text_uthmani?: string;
   text_imlaei?: string;
   text_uthmani_simple?: string;
 }
@@ -44,7 +46,7 @@ export async function getSurahScript(
     .map<ScriptAyah>((v, i) => ({
       ayahNumber: v.verse_number ?? i + 1,
       verseKey: v.verse_key ?? `${surah}:${v.verse_number ?? i + 1}`,
-      text: (type === 'imlaei' ? v.text_imlaei : v.text_uthmani_simple) ?? '',
+      text: (v[field as keyof FVerse] as string | undefined) ?? '',
     }))
     .filter((a) => a.text);
   return out.length ? out : null;
