@@ -25,6 +25,20 @@ export default function SeerahPage() {
       sourceNote='Acceptable sources for seerah include classical works (e.g. Ibn Hishām, At-Tabarī) and contemporary academically reviewed compendia, registered with full attribution and license status. QuranVoice will not paste seerah narrative into source code or generate it via AI.'
       icon="scroll"
       pattern="arabesque"
+      intro={
+        <div className="rounded-2xl border border-ink-600/50 bg-ink-800/40 p-5 text-sm leading-relaxed text-cream-200/80 md:p-6">
+          <p>
+            The Quran is not a biography, yet the life of the Prophet ﷺ runs beneath its verses — in
+            the Makkan call to Tawḥīd, the patience under persecution, the migration, and the
+            building of a community in Madinah.
+          </p>
+          <p className="mt-3">
+            Begin with the Quranic references below, which speak directly of the Prophet ﷺ and his
+            mission. A full, structured seerah — drawn from classical works such as Ibn Hishām and
+            aṭ-Ṭabarī — will appear here once those sources are registered with proper attribution.
+          </p>
+        </div>
+      }
       readingSuggestions={[
         { verseKey: '33:40', label: 'The Seal of the Prophets — Quran 33:40' },
         { verseKey: '33:45', label: 'A witness, a bringer of glad tidings, a warner — 33:45' },
