@@ -5,12 +5,20 @@ import { useAudioPlayer } from '@/components/audio/AudioPlayerProvider';
 import type { Ayah, WordToken } from '@/lib/types/quran';
 import type { TranslationVerse } from '@/lib/types/translation';
 import { cn } from '@/lib/utils/cn';
+import { toArabicDigits } from '@/lib/utils/arabicNumber';
 import { Icon } from '@/components/ui/Icon';
 import { WordAudioHighlighter } from '@/components/reader/WordAudioHighlighter';
 import { AyahActions } from './AyahActions';
 import { NowRecitingBadge } from './NowRecitingBadge';
 import { TranslationBlock } from './TranslationBlock';
 import { WordByWordBlock } from './WordByWordBlock';
+
+/** Alternate Quran script text for an ayah (Tajweed HTML, Imlaei/simple text). */
+export interface ScriptText {
+  text?: string;
+  html?: string;
+  isTajweed?: boolean;
+}
 
 interface AyahCardProps {
   ayah: Ayah;
@@ -25,6 +33,8 @@ interface AyahCardProps {
   autoScrollWithAudio?: boolean;
   /** Show the word-by-word toggle (reading setting + source capability). */
   wordByWordEnabled?: boolean;
+  /** Non-Uthmani script text to render instead of the default Uthmani. */
+  scriptText?: ScriptText;
 }
 
 export function AyahCard({
@@ -36,6 +46,7 @@ export function AyahCard({
   arabicFontSize = 32,
   autoScrollWithAudio = true,
   wordByWordEnabled = false,
+  scriptText,
 }: AyahCardProps) {
   const { now, notice } = useAudioPlayer();
   const isPlaying = now?.surah === ayah.surahNumber && now?.ayah === ayah.ayahNumber;
@@ -140,12 +151,39 @@ export function AyahCard({
       </div>
 
       <div className="mt-6">
-        <WordAudioHighlighter
-          verseKey={ayah.verseKey}
-          ayahNumber={ayah.ayahNumber}
-          arabic={ayah.arabic}
-          fontSize={arabicFontSize}
-        />
+        {scriptText?.isTajweed && scriptText.html ? (
+          // Tajweed-colored text (HTML from QF text_uthmani_tajweed).
+          <p
+            className="tajweed-text arabic text-right text-cream-50"
+            dir="rtl"
+            lang="ar"
+            style={{ fontSize: `${arabicFontSize}px` }}
+            dangerouslySetInnerHTML={{
+              __html: `${scriptText.html}<span class="ayah-marker font-sans align-middle">${toArabicDigits(ayah.ayahNumber)}</span>`,
+            }}
+          />
+        ) : scriptText?.text ? (
+          // Imlaei / simplified Uthmani text.
+          <p
+            className="arabic text-right text-cream-50"
+            dir="rtl"
+            lang="ar"
+            style={{ fontSize: `${arabicFontSize}px` }}
+          >
+            {scriptText.text}
+            <span className="ayah-marker font-sans align-middle">
+              {toArabicDigits(ayah.ayahNumber)}
+            </span>
+          </p>
+        ) : (
+          // Default Uthmani with word-level audio highlighting.
+          <WordAudioHighlighter
+            verseKey={ayah.verseKey}
+            ayahNumber={ayah.ayahNumber}
+            arabic={ayah.arabic}
+            fontSize={arabicFontSize}
+          />
+        )}
       </div>
 
       {showNotice && (
