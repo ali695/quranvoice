@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { Tabs } from '@/components/ui/Tabs';
 import { getSupabaseBrowser } from '@/lib/supabase/client';
 import {
+  sendPasswordReset,
   signInWithGoogle,
   signInWithMagicLink,
   signInWithPassword,
@@ -71,6 +72,27 @@ export function SignInForm() {
     else setMsg({ kind: 'error', text: res.error ?? 'Google sign-in failed.' });
   }
 
+  async function onForgotPassword() {
+    if (!sb) return;
+    if (!email) {
+      setMsg({ kind: 'error', text: 'Enter your email above first, then tap “Forgot password”.' });
+      return;
+    }
+    setBusy(true);
+    setMsg(null);
+    const res = await sendPasswordReset(sb, email, {
+      redirectTo:
+        (process.env.NEXT_PUBLIC_APP_URL ??
+          (typeof window !== 'undefined' ? window.location.origin : '')) + '/auth/reset-password',
+    });
+    setBusy(false);
+    setMsg(
+      res.ok
+        ? { kind: 'info', text: 'If that email has an account, a password-reset link is on its way.' }
+        : { kind: 'error', text: res.error ?? 'Could not send the reset link.' },
+    );
+  }
+
   return (
     <div className="flex flex-col gap-5">
       <Tabs
@@ -124,6 +146,23 @@ export function SignInForm() {
           },
         ]}
       />
+
+      <div className="flex justify-end -mt-2">
+        <button
+          type="button"
+          onClick={onForgotPassword}
+          disabled={busy}
+          className="text-xs font-medium text-cream-200/70 hover:text-gold-300 disabled:opacity-50"
+        >
+          Forgot password?
+        </button>
+      </div>
+
+      <div className="flex items-center gap-3 text-[11px] uppercase tracking-wider text-cream-200/40">
+        <span className="h-px flex-1 bg-ink-600/60" />
+        or
+        <span className="h-px flex-1 bg-ink-600/60" />
+      </div>
 
       <button
         type="button"

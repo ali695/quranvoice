@@ -112,21 +112,20 @@ export function LearningTopicShell({
       <AppShell>
         {intro}
 
-        {/* Body or unavailable state */}
-        {body ?? (
-          <UnavailableState
-            title={
-              sourceStatus === 'verified'
-                ? 'Content arriving here soon'
-                : sourceStatus === 'review_pending'
+        {/* The reading suggestions, intro, and related links below are the
+            page's content. Only fall back to an unavailable state when there
+            is genuinely nothing curated to show. */}
+        {body ??
+          (!intro && readingSuggestions.length === 0 ? (
+            <UnavailableState
+              title={
+                sourceStatus === 'review_pending'
                   ? 'Awaiting source review'
-                  : sourceStatus === 'needs_source'
-                    ? 'Requires verified source data'
-                    : 'Not connected yet'
-            }
-            description={sourceNote}
-          />
-        )}
+                  : 'Requires verified source data'
+              }
+              description={sourceNote}
+            />
+          ) : null)}
 
         {/* Reading suggestions (always safe — links into the reader) */}
         {readingSuggestions.length > 0 && (

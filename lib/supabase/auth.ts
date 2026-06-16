@@ -59,6 +59,25 @@ export async function signUpWithEmail(
   return { ok: true, needsConfirmation: !data.session };
 }
 
+export async function sendPasswordReset(
+  client: SupabaseClient,
+  email: string,
+  opts: SignInOptions,
+): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await client.auth.resetPasswordForEmail(email, {
+    redirectTo: opts.redirectTo,
+  });
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
+export async function updateUserPassword(
+  client: SupabaseClient,
+  newPassword: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const { error } = await client.auth.updateUser({ password: newPassword });
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
 export async function signOut(client: SupabaseClient): Promise<void> {
   await client.auth.signOut();
 }

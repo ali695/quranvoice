@@ -25,6 +25,20 @@ export default function TawheedIimanPage() {
       sourceNote="Editorial reading guide. Detailed aqīdah formulations belong with a qualified teacher and a verified scholarly source — we do not generate them via AI."
       icon="sparkle"
       pattern="star"
+      intro={
+        <div className="rounded-2xl border border-ink-600/50 bg-ink-800/40 p-5 text-sm leading-relaxed text-cream-200/80 md:p-6">
+          <p>
+            Tawḥīd — the Oneness of Allah — is the thread running through the whole Quran, from the
+            opening surah to the closing ones. Rather than summarise doctrine here, this guide points
+            you to the passages where it is most concentrated so you can read them directly.
+          </p>
+          <p className="mt-3">
+            Read each reference slowly, ideally with a translation and a verified tafsir open
+            alongside. For matters of belief, learn from a qualified teacher — QuranVoice gives you
+            the verses and the verified commentary, not its own rulings.
+          </p>
+        </div>
+      }
       readingSuggestions={[
         { verseKey: '112:1', label: 'Surah Al-Ikhlāṣ — He is Allah, the One — 112:1' },
         { verseKey: '2:255', label: 'Āyat al-Kursī — 2:255' },

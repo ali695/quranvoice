@@ -7,13 +7,19 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useCapabilities } from '@/lib/hooks/useCapabilities';
+import { buildQuranScripts } from '@/lib/data/mushafCapabilities';
 import { recordRead } from '@/lib/services/progressService';
-import { loadSettings } from '@/lib/services/settingsService';
+import { loadSettings, updateSettings } from '@/lib/services/settingsService';
 import type { Ayah, Surah } from '@/lib/types/quran';
+import type { ReadingSettings } from '@/lib/types/settings';
 import type { TranslationVerse } from '@/lib/types/translation';
-import { AyahCard } from './AyahCard';
+import { AyahCard, type ScriptText } from './AyahCard';
+import { MushafReader } from './MushafReader';
 import { QuranNavigation } from './QuranNavigation';
 import { SurahHeader } from './SurahHeader';
+
+type QScript = ReadingSettings['script'];
+type MStyle = ReadingSettings['mushafStyle'];
 
 interface QuranReaderProps {
   surah: Surah;
@@ -32,6 +38,10 @@ export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: Qur
   const [showWordByWord, setShowWordByWord] = useState(false);
   const [arabicSize, setArabicSize] = useState(32);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [script, setScript] = useState<QScript>('uthmani');
+  const [scriptByAyah, setScriptByAyah] = useState<Map<number, ScriptText>>(new Map());
+  const [scriptLoading, setScriptLoading] = useState(false);
+  const [mushafStyle, setMushafStyle] = useState<MStyle>('standard');
 
   // Hydrate display preferences from settings.
   useEffect(() => {
@@ -39,7 +49,57 @@ export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: Qur
     setShowTranslation(s.reading.showTranslation);
     setShowWordByWord(s.reading.showWordByWord);
     setArabicSize(s.reading.arabicFontSize);
+    setScript(s.reading.script);
+    setMushafStyle(s.reading.mushafStyle);
   }, []);
+
+  // Apply the selected Quran script (Tajweed / Imlaei / simplified Uthmani) by
+  // fetching that script for the surah. 'uthmani' uses the server-rendered text.
+  useEffect(() => {
+    let cancelled = false;
+    async function loadScript() {
+      if (script === 'uthmani') {
+        setScriptByAyah(new Map());
+        return;
+      }
+      setScriptLoading(true);
+      try {
+        const map = new Map<number, ScriptText>();
+        if (script === 'tajweed') {
+          const res = await fetch(`/api/quran/tajweed/${surah.number}`);
+          if (res.ok) {
+            const json = (await res.json()) as { data?: Array<{ ayahNumber: number; tajweedHtml: string }> };
+            json.data?.forEach((a) => map.set(a.ayahNumber, { html: a.tajweedHtml, isTajweed: true }));
+          }
+        } else {
+          const type = script === 'imlaei' ? 'imlaei' : 'uthmani_simple';
+          const res = await fetch(`/api/quran/script/${surah.number}/${type}`);
+          if (res.ok) {
+            const json = (await res.json()) as { data?: Array<{ ayahNumber: number; text: string }> };
+            json.data?.forEach((a) => map.set(a.ayahNumber, { text: a.text }));
+          }
+        }
+        if (!cancelled) setScriptByAyah(map);
+      } catch {
+        if (!cancelled) setScriptByAyah(new Map());
+      } finally {
+        if (!cancelled) setScriptLoading(false);
+      }
+    }
+    void loadScript();
+    return () => {
+      cancelled = true;
+    };
+  }, [script, surah.number]);
+
+  const scriptOptions = useMemo(
+    () => buildQuranScripts(capabilities).filter((o) => o.enabled),
+    [capabilities],
+  );
+  const changeScript = (next: QScript) => {
+    setScript(next);
+    updateSettings('reading', { script: next });
+  };
 
   // Word-by-word is shown only when the reader setting is on AND the active
   // source actually provides per-word data.
@@ -102,6 +162,10 @@ export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: Qur
     [surah.number, surah.transliteration],
   );
 
+  // Mushaf page-layout modes render the printed-page reader instead of cards.
+  const mushafMode: '15-line' | '16-line' | null =
+    mushafStyle === 'page' ? '15-line' : mushafStyle === 'sixteen-line' ? '16-line' : null;
+
   return (
     <div className="flex flex-col gap-6">
       <SurahHeader surah={surah} textSourceName={textSourceName} />
@@ -119,6 +183,23 @@ export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: Qur
           >
             {showTranslation ? 'Hide translation' : 'Show translation'}
           </button>
+          {scriptOptions.length > 1 && (
+            <label className="inline-flex items-center gap-1.5">
+              <span className="sr-only">Quran script</span>
+              <select
+                value={script}
+                onChange={(e) => changeScript(e.target.value as QScript)}
+                className="h-9 max-w-[10rem] truncate rounded-lg border border-ink-600/70 bg-ink-800/70 px-3 text-xs font-medium text-cream-100 focus:border-gold-500/50 focus:outline-none"
+                aria-label="Quran script"
+              >
+                {scriptOptions.map((o) => (
+                  <option key={o.value} value={o.value} className="bg-ink-900">
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <button
             type="button"
             onClick={() => setSettingsOpen(true)}
@@ -155,28 +236,33 @@ export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: Qur
 
       <QuranNavigation surahNumber={surah.number} />
 
-      {translationLoading && (
+      {(translationLoading || scriptLoading) && (
         <div className="flex flex-col gap-3 rounded-2xl border border-ink-600/40 bg-ink-800/30 p-4 text-xs text-cream-200/55">
           <Skeleton className="h-3 w-32" />
-          Loading translation…
+          {scriptLoading ? 'Loading script…' : 'Loading translation…'}
         </div>
       )}
 
-      <ol className="flex flex-col gap-4">
-        {ayahs.map((a) => (
-          <li key={a.verseKey}>
-            <AyahCard
-              ayah={a}
-              surahLabel={surahLabel}
-              translations={translationsByAyah.get(a.ayahNumber)}
-              highlighted={highlightAyah === a.ayahNumber}
-              showTranslation={showTranslation}
-              arabicFontSize={arabicSize}
-              wordByWordEnabled={wordByWordEnabled}
-            />
-          </li>
-        ))}
-      </ol>
+      {mushafMode ? (
+        <MushafReader initialPage={surah.pageStart ?? 1} defaultLayout={mushafMode} />
+      ) : (
+        <ol className="flex flex-col gap-4">
+          {ayahs.map((a) => (
+            <li key={a.verseKey}>
+              <AyahCard
+                ayah={a}
+                surahLabel={surahLabel}
+                translations={translationsByAyah.get(a.ayahNumber)}
+                highlighted={highlightAyah === a.ayahNumber}
+                showTranslation={showTranslation}
+                arabicFontSize={arabicSize}
+                wordByWordEnabled={wordByWordEnabled}
+                scriptText={scriptByAyah.get(a.ayahNumber)}
+              />
+            </li>
+          ))}
+        </ol>
+      )}
 
       <QuranNavigation surahNumber={surah.number} />
     </div>

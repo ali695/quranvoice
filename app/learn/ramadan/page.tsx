@@ -25,6 +25,20 @@ export default function RamadanPage() {
       sourceNote="Editorial reading guidance only. The Quran text shown anywhere in the app comes from the verified provider registered on /sources — never paraphrased or auto-generated."
       icon="crescent"
       pattern="star"
+      intro={
+        <div className="rounded-2xl border border-ink-600/50 bg-ink-800/40 p-5 text-sm leading-relaxed text-cream-200/80 md:p-6">
+          <p>
+            Ramadan is the month the Quran describes as the one in which it was sent down (2:185).
+            Many readers use it to complete a full reading of the Quran — roughly one juzʾ a day
+            across the thirty days.
+          </p>
+          <p className="mt-3">
+            Pair this companion with a daily reading goal and your favourite reciter: read a portion
+            each day, listen on the commute, and return to the verses below for reflection. Set the
+            pace that you can sustain past Ramadan, not just during it.
+          </p>
+        </div>
+      }
       readingSuggestions={[
         { verseKey: '2:183', label: "Fasting is prescribed for you — 2:183" },
         { verseKey: '2:185', label: 'The month of Ramadan in which the Quran was revealed — 2:185' },

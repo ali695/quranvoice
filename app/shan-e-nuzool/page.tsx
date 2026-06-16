@@ -4,12 +4,12 @@ import { AppShell } from '@/components/layout/AppShell';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { UnavailableState } from '@/components/ui/ErrorState';
 import { getShanENuzoolStats } from '@/lib/services/shanENuzool.service';
 
 export const metadata: Metadata = {
-  title: 'Shan-e-Nuzool',
-  description: 'Reviewed Shan-e-Nuzool entries by ayah, with full source attribution.',
+  title: 'Shan-e-Nuzool — Occasions of Revelation',
+  description:
+    'Shan-e-Nuzool explained: the Urdu and Persian name for the occasions of revelation. Reviewed, source-attributed entries appear here when registered.',
 };
 
 export const revalidate = 600;
@@ -19,9 +19,9 @@ export default async function ShanENuzoolIndex() {
   return (
     <>
       <PageHeader
-        eyebrow="Study"
+        eyebrow="Quranic sciences"
         title="Shan-e-Nuzool"
-        description="QuranVoice only shows Shan-e-Nuzool after source review."
+        description="The occasion behind a verse — the circumstances in which it was revealed."
         actions={
           <Link
             href="/sources/shan-e-nuzool"
@@ -33,21 +33,59 @@ export default async function ShanENuzoolIndex() {
         }
       />
       <AppShell>
-        <Card variant="elevated" className="p-5">
+        <Card variant="elevated" className="p-6">
+          <h2 className="font-display text-lg font-medium text-cream-50">
+            What Shan-e-Nuzool means
+          </h2>
+          <div className="mt-3 space-y-3 text-sm leading-relaxed text-cream-200/75">
+            <p>
+              <span dir="rtl" lang="ur" className="quran-mushaf text-base text-cream-100">
+                شانِ نزول
+              </span>{' '}
+              — <em>shān-e-nuzūl</em> — is the Urdu and Persian name for the occasion of revelation:
+              the event, question, or situation in the life of the Prophet ﷺ and the early community
+              that a particular verse was revealed about. It is the same Quranic science the Arabic
+              tradition calls{' '}
+              <Link href="/asbab-al-nuzul" className="text-gold-300 hover:underline">
+                Asbab al-Nuzul
+              </Link>
+              .
+            </p>
+            <p>
+              Understanding the occasion helps a reader grasp what a verse responded to and how its
+              guidance applies. Because it carries that weight, QuranVoice treats it strictly: an
+              entry is shown only when it comes from a registered, license-checked source and has
+              passed review — never paraphrased, inferred, or generated.
+            </p>
+          </div>
+        </Card>
+
+        <Card variant="elevated" className="mt-6 p-5">
           <div className="grid gap-3 sm:grid-cols-3">
-            <Stat label="Approved entries" value={stats.approvedCount} />
+            <Stat label="Reviewed entries" value={stats.approvedCount} />
             <Stat label="Pending review (admin)" value={stats.pendingCount} />
             <Stat label="Registered sources" value={stats.sources.length} />
           </div>
         </Card>
 
         {stats.approvedCount === 0 ? (
-          <div className="mt-6">
-            <UnavailableState
-              title="No reviewed entries yet"
-              description="QuranVoice only displays Shan-e-Nuzool entries after they pass source review. When you open an ayah and tap the Shan-e-Nuzool button, the drawer will show reviewed entries here."
-            />
-          </div>
+          <Card variant="elevated" className="mt-6 p-6">
+            <div className="flex items-start gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-500/10 text-gold-300">
+                <Icon name="book" size={18} />
+              </span>
+              <div>
+                <h3 className="font-display text-base font-medium text-cream-50">
+                  Reading entries inline
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-cream-200/70">
+                  When you open an ayah and tap <strong>Shan-e-Nuzool</strong>, any reviewed entry
+                  for that verse opens in a drawer with its source and narration grade. As verified
+                  entries are registered they will be listed here too — each with full attribution.
+                </p>
+              </div>
+            </div>
+          </Card>
         ) : (
           <p className="mt-6 text-sm text-cream-200/65">
             Open any ayah and tap <strong>Shan-e-Nuzool</strong> to see reviewed entries inline.

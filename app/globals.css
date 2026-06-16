@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Official KFGQPC HAFS Uthmanic script (King Fahd Complex) — the same digital
+   Mushaf font used by quran.com. Self-hosted; freely distributed for Quran
+   display. Renders the verified text_uthmani beautifully and legibly. */
+@font-face {
+  font-family: 'KFGQPC HAFS';
+  src: url('/fonts/UthmanicHafs1Ver18.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   /* ── Dark Gold (default) — palette as space-separated RGB triplets so
         Tailwind's rgb(var(--x) / <alpha-value>) keeps working everywhere. ── */
@@ -163,7 +174,7 @@
   }
 
   .arabic {
-    font-family: var(--font-amiri-quran), var(--font-amiri), 'Amiri Quran', 'Amiri',
+    font-family: 'KFGQPC HAFS', var(--font-amiri-quran), var(--font-amiri), 'Amiri Quran', 'Amiri',
       'Scheherazade New', serif;
     direction: rtl;
     line-height: 2.15;
@@ -175,7 +186,7 @@
 
   /* Premium printed-Mushaf rendering for page-by-page layout. */
   .quran-mushaf {
-    font-family: var(--font-amiri-quran), 'Amiri Quran', var(--font-amiri), 'Amiri', serif;
+    font-family: 'KFGQPC HAFS', var(--font-amiri-quran), 'Amiri Quran', var(--font-amiri), 'Amiri', serif;
     direction: rtl;
     font-feature-settings: 'calt' 1, 'liga' 1, 'rlig' 1;
     text-rendering: optimizeLegibility;
@@ -197,7 +208,7 @@
     color: #1b1510;
   }
   .tajweed-text {
-    font-family: var(--font-amiri-quran), 'Amiri Quran', var(--font-amiri), serif;
+    font-family: 'KFGQPC HAFS', var(--font-amiri-quran), 'Amiri Quran', var(--font-amiri), serif;
     direction: rtl;
     color: #1b1510;
   }

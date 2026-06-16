@@ -16,13 +16,13 @@ export async function ResourceStats() {
       icon: 'globe',
       label: 'Translations',
       value: s.counts.translations ? String(s.counts.translations) : '—',
-      hint: s.health.foundationConfigured ? 'via Quran.Foundation' : 'add Foundation creds to enable',
+      hint: s.health.foundationConfigured ? 'via Quran.Foundation' : undefined,
     },
     {
       icon: 'feather',
       label: 'Tafsir resources',
       value: s.counts.tafsirs ? String(s.counts.tafsirs) : '—',
-      hint: s.health.foundationConfigured ? 'via Quran.Foundation' : 'awaiting verified source',
+      hint: s.health.foundationConfigured ? 'via Quran.Foundation' : undefined,
     },
     {
       icon: 'volume',
