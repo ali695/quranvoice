@@ -275,15 +275,22 @@ export const featuredReciters = FEATURED_RECITERS;
 /** Map common AlQuran-Cloud reciter ids → Quran.Foundation numeric ids so
  *  word-level segment timing works for the default reciters. */
 const QF_RECITER_MAP: Record<string, number> = {
+  // Quran.Foundation verse-recitation IDs: 1 AbdulBaset Mujawwad, 2 AbdulBaset
+  // Murattal, 3 Sudais, 4 Shatri, 5 Rifai, 6 Husary, 7 Alafasy, 8 Minshawi
+  // Mujawwad, 9 Minshawi Murattal, 10 Shuraym, 11 Tablawi, 12 Husary Muallim.
   'ar.alafasy': 7,
   'ar.husary': 6,
-  'ar.husarymujawwad': 6,
-  'ar.abdulbasitmurattal': 1,
+  'ar.abdulbasitmurattal': 2,
+  'ar.abdulbasitmujawwad': 1,
   'ar.abdurrahmansudais': 3,
+  'ar.abdurrahmaansudais': 3,
   'ar.sudais': 3,
   'ar.shaatree': 4,
-  'ar.minshawi': 8,
-  'ar.minshawimujawwad': 9,
+  'ar.hanirifai': 5,
+  'ar.minshawi': 9,
+  'ar.minshawimujawwad': 8,
+  'ar.saoodshuraym': 10,
+  'ar.shuraim': 10,
 };
 
 const QF_AUDIO_CDN = 'https://verses.quran.foundation/';
@@ -327,4 +334,132 @@ export async function getAyahTiming(
   const segments = Array.isArray(audio.segments) ? audio.segments : [];
   const url = audio.url.startsWith('http') ? audio.url : `${QF_AUDIO_CDN}${audio.url}`;
   return { url, segments, reciterId: qfId };
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Full-surah audio with per-ayah + per-word timestamps (live follow-along)
+// ─────────────────────────────────────────────────────────────────────────
+
+/**
+ * Quran.Foundation chapter-reciter IDs. Legacy AlQuran-Cloud IDs (the old
+ * default `ar.alafasy`) map onto them so saved settings keep working.
+ */
+const CHAPTER_RECITER_ALIASES: Record<string, number> = {
+  'ar.abdulbasitmujawwad': 1,
+  'ar.abdulbasitmurattal': 2,
+  'ar.abdurrahmansudais': 3,
+  'ar.abdurrahmaansudais': 3,
+  'ar.sudais': 3,
+  'ar.shaatree': 4,
+  'ar.hanirifai': 5,
+  'ar.husary': 6,
+  'ar.alafasy': 7,
+  'ar.minshawi': 9,
+  'ar.saoodshuraym': 10,
+  'ar.shuraim': 10,
+  'ar.ghamdi': 13,
+  'ar.ahmedajamy': 19,
+  'ar.mahermuaiqly': 159,
+};
+
+export function resolveChapterReciterId(reciterId: string): number | null {
+  if (/^\d{1,4}$/.test(reciterId)) return Number(reciterId);
+  return CHAPTER_RECITER_ALIASES[reciterId] ?? null;
+}
+
+/** [wordPosition (1-based), startMs, endMs] — absolute times in the surah file. */
+export type WordTiming = [number, number, number];
+
+export interface TimedAyah {
+  ayah: number;
+  /** Start/end of the ayah in the surah file (ms). */
+  from: number;
+  to: number;
+  words: WordTiming[];
+}
+
+export interface SurahTiming {
+  reciterId: number;
+  surah: number;
+  url: string;
+  durationMs: number;
+  ayahs: TimedAyah[];
+}
+
+interface FoundationTimedChapterAudio {
+  audio_file?: {
+    audio_url?: string;
+    duration?: number;
+    timestamps?: Array<{
+      verse_key?: string;
+      timestamp_from?: number;
+      timestamp_to?: number;
+      segments?: unknown[];
+    }>;
+  };
+}
+
+const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+
+/**
+ * Full-surah MP3 plus real per-ayah and per-word timing from Quran.Foundation.
+ * Returns null unless EVERY ayah of the surah has timing — a partial set would
+ * make the pointer drift, and we never estimate timing.
+ */
+export async function getSurahTiming(reciterId: string, surah: number): Promise<SurahTiming | null> {
+  if (!isFoundationConfigured()) return null;
+  if (!Number.isInteger(surah) || surah < 1 || surah > 114) return null;
+  const id = resolveChapterReciterId(reciterId);
+  if (id === null) return null;
+  const json = await foundationFetch<FoundationTimedChapterAudio>(F.surahAudioWithTimestamps(id, surah), {
+    revalidate: 60 * 60 * 24 * 7,
+  });
+  const file = json?.audio_file;
+  if (!file?.audio_url || !Array.isArray(file.timestamps)) return null;
+  const expected = SURAHS.find((x) => x.number === surah)?.ayahCount;
+
+  const ayahs: TimedAyah[] = [];
+  for (const t of file.timestamps) {
+    const m = /^(\d{1,3}):(\d{1,3})$/.exec(t.verse_key ?? '');
+    if (!m || Number(m[1]) !== surah || !isNum(t.timestamp_from) || !isNum(t.timestamp_to)) return null;
+    const words: WordTiming[] = [];
+    for (const seg of t.segments ?? []) {
+      if (Array.isArray(seg) && seg.length >= 3 && isNum(seg[0]) && isNum(seg[1]) && isNum(seg[2])) {
+        words.push([seg[0], seg[1], seg[2]]);
+      }
+    }
+    ayahs.push({ ayah: Number(m[2]), from: t.timestamp_from, to: t.timestamp_to, words });
+  }
+  ayahs.sort((a, b) => a.from - b.from);
+  if (!ayahs.length || (expected && ayahs.length !== expected)) return null;
+
+  return {
+    reciterId: id,
+    surah,
+    url: file.audio_url,
+    durationMs: isNum(file.duration) ? file.duration : ayahs[ayahs.length - 1].to,
+    ayahs,
+  };
+}
+
+export interface TimedReciter {
+  id: string;
+  name: string;
+  style?: string;
+}
+
+interface FoundationChapterReciters {
+  reciters?: Array<{ id: number; name?: string; reciter_name?: string; style?: { name?: string } | string | null }>;
+}
+
+/** Reciters with full-surah audio on Quran.Foundation (all carry word timing). */
+export async function listTimedReciters(): Promise<TimedReciter[]> {
+  if (!isFoundationConfigured()) return [];
+  const json = await foundationFetch<FoundationChapterReciters>(F.chapterReciters(), { revalidate: 86_400 });
+  return (json?.reciters ?? [])
+    .filter((r) => isNum(r.id))
+    .map((r) => {
+      const style = typeof r.style === 'string' ? r.style : r.style?.name;
+      return { id: String(r.id), name: (r.name ?? r.reciter_name ?? `Reciter ${r.id}`).trim(), style: style || undefined };
+    });
 }

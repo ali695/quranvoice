@@ -1,31 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useAudioPlayer } from '@/components/audio/AudioPlayerProvider';
+import { ReciterSelector } from '@/components/audio/ReciterSelector';
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
 import { loadSettings, updateSettings } from '@/lib/services/settingsService';
 import type { AudioSettings as AS } from '@/lib/types/settings';
-import type { Reciter } from '@/lib/types/audio';
 
 export function AudioSettings() {
   const [s, setS] = useState<AS | null>(null);
-  const [reciters, setReciters] = useState<Reciter[]>([]);
+  // Settings that the live player must apply immediately, not just persist.
+  const player = useAudioPlayer();
 
   useEffect(() => setS(loadSettings().audio), []);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      const res = await fetch('/api/quran/recitations');
-      if (!res.ok) return;
-      const json = (await res.json()) as { data?: Reciter[] };
-      if (!cancelled && json.data) setReciters(json.data);
-    }
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   if (!s) return null;
   const patch = (p: Partial<AS>) => {
@@ -39,16 +27,8 @@ export function AudioSettings() {
       <p className="mt-1 text-sm text-cream-200/65">Reciter, playback, and behavior.</p>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        <Select
-          label="Default reciter"
-          value={s.defaultReciterId}
-          options={
-            reciters.length > 0
-              ? reciters.map((r) => ({ value: r.id, label: r.name }))
-              : [{ value: s.defaultReciterId, label: s.defaultReciterId }]
-          }
-          onChange={(e) => patch({ defaultReciterId: e.target.value })}
-        />
+        {/* Word-synced reciters only; switching here changes the live player too. */}
+        <ReciterSelector />
         <Select
           label="Playback speed"
           value={String(s.playbackSpeed)}
@@ -59,7 +39,11 @@ export function AudioSettings() {
             { value: '1.5', label: '1.5×' },
             { value: '2', label: '2.0×' },
           ]}
-          onChange={(e) => patch({ playbackSpeed: Number(e.target.value) })}
+          onChange={(e) => {
+            const v = Number(e.target.value);
+            patch({ playbackSpeed: v });
+            player.setPlaybackSpeed(v);
+          }}
         />
         <Select
           label="Audio quality"
@@ -80,7 +64,11 @@ export function AudioSettings() {
             { value: 'range', label: 'Range' },
             { value: 'surah', label: 'Surah' },
           ]}
-          onChange={(e) => patch({ repeatMode: e.target.value as AS['repeatMode'] })}
+          onChange={(e) => {
+            const v = e.target.value as AS['repeatMode'];
+            patch({ repeatMode: v });
+            player.setRepeatMode(v);
+          }}
         />
       </div>
 
@@ -101,7 +89,10 @@ export function AudioSettings() {
             <input
               type="checkbox"
               checked={Boolean(s[key])}
-              onChange={(e) => patch({ [key]: e.target.checked } as Partial<AS>)}
+              onChange={(e) => {
+                patch({ [key]: e.target.checked } as Partial<AS>);
+                if (key === 'autoPlayNextAyah') player.setAutoPlayNextAyah(e.target.checked);
+              }}
               className="h-4 w-4 accent-gold-500"
             />
           </label>

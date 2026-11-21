@@ -36,7 +36,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
     fallbackTafsirEnabled: true,
   },
   audio: {
-    defaultReciterId: 'ar.alafasy',
+    defaultReciterId: '7', // Mishari al-Afasy (Quran.Foundation chapter reciter, word-synced)
     playbackSpeed: 1,
     repeatMode: 'off',
     autoScroll: true,

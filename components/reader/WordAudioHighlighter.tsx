@@ -29,16 +29,20 @@ export function WordAudioHighlighter({
   arabic,
   fontSize,
 }: WordAudioHighlighterProps) {
-  const { now, currentWordIndex, exactWordTimingAvailable } = useAudioPlayer();
+  const { now, currentWordIndex, exactWordTimingAvailable, syncedSurah, seekToWord } = useAudioPlayer();
   const isActive = now?.verseKey === verseKey;
   const wordMode = isActive && exactWordTimingAvailable;
+  // During synced surah playback, preload the next ayah's words so the
+  // highlight is ready the moment the Qari reaches it.
+  const isNext =
+    syncedSurah && now?.surah !== undefined && now.ayah !== undefined && `${now.surah}:${now.ayah + 1}` === verseKey;
 
   const [words, setWords] = useState<WordToken[] | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   // Lazily fetch the canonical word list only when this ayah enters word mode.
   useEffect(() => {
-    if (!wordMode || loaded) return;
+    if ((!wordMode && !isNext) || loaded) return;
     let cancelled = false;
     (async () => {
       try {
@@ -56,7 +60,7 @@ export function WordAudioHighlighter({
     return () => {
       cancelled = true;
     };
-  }, [wordMode, loaded, verseKey]);
+  }, [wordMode, isNext, loaded, verseKey]);
 
   const marker = (
     <span className="ayah-marker font-sans align-middle">{toArabicDigits(ayahNumber)}</span>
@@ -88,7 +92,18 @@ export function WordAudioHighlighter({
       {words.map((w, i) => (
         <span key={w.position ?? i}>
           <span
+            role="button"
+            tabIndex={0}
+            title="Recite from this word"
+            onClick={() => seekToWord(verseKey, w.position)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                seekToWord(verseKey, w.position);
+              }
+            }}
             className={cn(
+              'cursor-pointer rounded-md transition-colors',
               currentWordIndex === w.position && 'word-active',
               currentWordIndex != null && w.position < currentWordIndex && 'word-done',
             )}

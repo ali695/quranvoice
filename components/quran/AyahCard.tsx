@@ -37,7 +37,7 @@ export function AyahCard({
   autoScrollWithAudio = true,
   wordByWordEnabled = false,
 }: AyahCardProps) {
-  const { now, notice } = useAudioPlayer();
+  const { now, notice, followAlong } = useAudioPlayer();
   const isPlaying = now?.surah === ayah.surahNumber && now?.ayah === ayah.ayahNumber;
   const showNotice = isPlaying && Boolean(notice);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -79,11 +79,16 @@ export function AyahCard({
     }
   }, [highlighted]);
 
-  // Auto-scroll to the playing ayah, throttled to not fight user scroll.
+  // Follow the recitation: keep the reciting ayah in view. Pauses as soon as
+  // the reader scrolls (followAlong=false) and resumes from the player button.
   useEffect(() => {
-    if (!isPlaying || !autoScrollWithAudio || !rootRef.current) return;
-    rootRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, [isPlaying, autoScrollWithAudio]);
+    if (!isPlaying || !autoScrollWithAudio || !followAlong || !rootRef.current) return;
+    const el = rootRef.current;
+    const r = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    // Long ayahs: align the start; otherwise centre it.
+    el.scrollIntoView({ behavior: 'smooth', block: r.height > vh * 0.6 ? 'start' : 'center' });
+  }, [isPlaying, autoScrollWithAudio, followAlong]);
 
   return (
     <article

@@ -81,6 +81,16 @@ export const F = {
   /** GET — chapter-level audio file for a recitation */
   audioForChapter: (recitationId: string | number, chapterId: number) =>
     `${FOUNDATION_BASE_PATH}/chapter_recitations/${recitationId}/${chapterId}`,
+  /**
+   * GET — full-surah audio WITH per-ayah and per-word timestamps.
+   * `audio_file.timestamps[]` = { verse_key, timestamp_from, timestamp_to,
+   * segments: [[wordPos, startMs, endMs], ...] } — times are absolute in the file.
+   * IDs are chapter-reciter IDs (see chapterReciters()).
+   */
+  surahAudioWithTimestamps: (chapterReciterId: number, chapterId: number) =>
+    `${FOUNDATION_BASE_PATH}/chapter_recitations/${chapterReciterId}/${chapterId}?segments=true`,
+  /** GET — reciters that have full-surah (chapter) audio */
+  chapterReciters: () => `${FOUNDATION_BASE_PATH}/resources/chapter_reciters`,
   /** GET — per-ayah audio files for a recitation across a chapter */
   ayahAudioForChapter: (recitationId: string | number, chapterId: number) =>
     `${FOUNDATION_BASE_PATH}/recitations/${recitationId}/by_chapter/${chapterId}`,
