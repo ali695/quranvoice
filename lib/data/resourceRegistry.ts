@@ -122,6 +122,48 @@ export const RESOURCE_REGISTRY: ResourceEntry[] = [
   },
 
   // ─────────────────────────────────────────────────────────────
+  // SURAH INTRODUCTIONS — Quran.Foundation chapter info
+  // ─────────────────────────────────────────────────────────────
+  {
+    id: 'surah-info-quran-foundation',
+    type: 'surah_info',
+    title: 'Surah introductions (English, Urdu)',
+    language: 'en',
+    sourceName: 'Quran.Foundation Content API (chapter info)',
+    sourceUrl: 'https://api-docs.quran.foundation',
+    licenseStatus: 'verified_allowed_with_attribution',
+    canDisplay: true,
+    canCache: true,
+    canDownload: false,
+    canRehost: false,
+    attributionRequired: true,
+    lastVerifiedAt: '2026-11-21',
+    notes:
+      'Shown verbatim (sanitized) with the provider-supplied source line on each surah page. Displayed under the Quran.Foundation Developer Terms; not redistributed as data.',
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  // QURAN STRUCTURE — juz / hizb / page / ruku / sajdah positions
+  // ─────────────────────────────────────────────────────────────
+  {
+    id: 'quran-metadata-tanzil',
+    type: 'quran_metadata',
+    title: 'Quran structure metadata (juz, hizb quarters, pages, rukus, sajdahs)',
+    language: 'ar',
+    sourceName: 'Tanzil Project — quran-data.xml',
+    sourceUrl: 'https://tanzil.net/docs/quran_metadata',
+    licenseStatus: 'verified_allowed_with_attribution',
+    canDisplay: true,
+    canCache: true,
+    canDownload: false,
+    canRehost: true,
+    attributionRequired: true,
+    lastVerifiedAt: '2026-11-21',
+    notes:
+      'CC BY 3.0. Positions only, no Quran text. Generated into lib/data/quranStructure.ts by scripts/generate-quran-structure.mjs; credited on every juz page.',
+  },
+
+  // ─────────────────────────────────────────────────────────────
   // WORD BY WORD — NOT YET REGISTERED
   // ─────────────────────────────────────────────────────────────
 

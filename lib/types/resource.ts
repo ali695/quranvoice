@@ -15,7 +15,9 @@ export type ResourceType =
   | 'shan_e_nuzul'
   | 'shan_e_nuzool'
   | 'topics'
-  | 'learning_content';
+  | 'learning_content'
+  | 'surah_info'
+  | 'quran_metadata';
 
 export type LicenseStatus =
   | 'verified_open'

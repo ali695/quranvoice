@@ -21,9 +21,11 @@ interface QuranReaderProps {
   textSourceName: string;
   /** Optional ayah to scroll into view and highlight */
   highlightAyah?: number;
+  /** Optional server-rendered introduction shown under the surah header */
+  intro?: React.ReactNode;
 }
 
-export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: QuranReaderProps) {
+export function QuranReader({ surah, ayahs, textSourceName, highlightAyah, intro }: QuranReaderProps) {
   const { playSurah } = useAudioPlayer();
   const { capabilities } = useCapabilities();
   const [translationsByAyah, setTranslationsByAyah] = useState<Map<number, TranslationVerse[]>>(new Map());
@@ -105,6 +107,7 @@ export function QuranReader({ surah, ayahs, textSourceName, highlightAyah }: Qur
   return (
     <div className="flex flex-col gap-6">
       <SurahHeader surah={surah} textSourceName={textSourceName} />
+      {intro}
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-ink-600/50 bg-ink-800/40 p-3">
         <div className="flex items-center gap-2">

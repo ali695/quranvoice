@@ -112,6 +112,26 @@ export default async function SourcesPage() {
             </li>
           </ul>
 
+          <h2>Surah introductions</h2>
+          <p>
+            The introduction on each surah page comes from the Quran.Foundation Content API (chapter info),
+            in English and Urdu. It is shown word for word with the source line the provider supplies
+            (for example, a named tafsir), and is never rewritten or generated.
+          </p>
+
+          <h2>Juz, hizb and page structure</h2>
+          <p>
+            Juz, hizb-quarter, mushaf-page, ruku and sajdah positions come from the{' '}
+            <a href="https://tanzil.net/docs/quran_metadata" rel="noopener">
+              Tanzil Project Quran metadata
+            </a>
+            , licensed{' '}
+            <a href="https://creativecommons.org/licenses/by/3.0/" rel="noopener license">
+              CC BY 3.0
+            </a>
+            . It contains positions only, no Quran text. Page numbers follow the 604-page Madani mushaf.
+          </p>
+
           <h2>What we never do</h2>
           <ul>
             <li>No fake Quran text or fake reciters.</li>
