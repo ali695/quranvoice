@@ -9,6 +9,7 @@ import { listReciters } from '@/lib/services/audioService';
 export const metadata: Metadata = {
   title: 'Recitations',
   description: 'Quran audio recitations from renowned reciters. Source attribution included.',
+  alternates: { canonical: '/recitations' },
 };
 
 export default async function RecitationsPage() {

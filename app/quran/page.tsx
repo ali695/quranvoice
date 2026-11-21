@@ -7,6 +7,7 @@ import { listAllSurahs } from '@/lib/services/quranService';
 export const metadata: Metadata = {
   title: 'Read the Quran',
   description: 'Read the Noble Quran by Surah, Juz, or page. Browse all 114 surahs.',
+  alternates: { canonical: '/quran' },
 };
 
 export default async function QuranIndexPage() {

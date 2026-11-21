@@ -7,6 +7,7 @@ import { loadSettings, updateSettings } from '@/lib/services/settingsService';
 import { languageName } from '@/lib/utils/languageNames';
 import { providerLabel } from '@/lib/tafsir/tafsir-source-priority';
 import type { NormalizedTafsir, TafsirResource } from '@/lib/types/tafsir';
+import { sanitizeHtml } from '@/lib/utils/sanitizeHtml';
 
 interface TafsirTabProps {
   surah: number;
@@ -213,7 +214,7 @@ function TafsirContent({ tafsir }: { tafsir: NormalizedTafsir }) {
           className={`mt-2 text-sm leading-relaxed text-cream-100/85 ${rtl ? 'text-right' : ''}`}
           // Content originates from a registered source (Quran.Foundation or
           // the labelled spa5k fallback); never AI-generated.
-          dangerouslySetInnerHTML={{ __html: tafsir.content }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(tafsir.content, { allowClass: true }) }}
         />
       ) : (
         <p

@@ -1,5 +1,6 @@
 import { UnavailableState } from '@/components/ui/ErrorState';
 import type { TafsirEntry } from '@/lib/types/tafsir';
+import { sanitizeHtml } from '@/lib/utils/sanitizeHtml';
 
 interface TafsirBlockProps {
   entries?: TafsirEntry[] | null;
@@ -33,7 +34,7 @@ export function TafsirBlock({ entries }: TafsirBlockProps) {
             <div
               className="mt-2 text-sm leading-relaxed text-cream-100/85"
               // Source has been verified through the registry before reaching this branch.
-              dangerouslySetInnerHTML={{ __html: t.textHtml }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(t.textHtml, { allowClass: true }) }}
             />
           ) : null}
           <p className="mt-3 text-[10px] uppercase tracking-wider text-cream-200/45">

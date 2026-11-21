@@ -6,8 +6,15 @@ import { useAudioPlayer } from '@/components/audio/AudioPlayerProvider';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import { RECITERS as FALLBACK_RECITERS } from '@/lib/data/home';
+import { RECITERS as FALLBACK_RECITERS, RECITER_PROFILE_IDS } from '@/lib/data/home';
 import type { Reciter } from '@/lib/types/audio';
+
+/** Foundation IDs are numeric; legacy CDN IDs map to a Foundation profile when one exists. */
+function reciterHref(id: string): string {
+  if (/^\d+$/.test(id)) return `/reciters/${id}`;
+  const mapped = RECITER_PROFILE_IDS[id];
+  return mapped ? `/reciters/${mapped}` : '/reciters';
+}
 
 /** Decorative geometric reciter avatar — never a photo of a real person. */
 function ReciterMark({ name, seed }: { name: string; seed: number }) {
@@ -102,7 +109,7 @@ export function FeaturedRecitations() {
                     <Icon name={playingThis && isPlaying ? 'pause' : 'play'} size={15} />
                   </button>
                   <Link
-                    href={`/reciters/${r.id}`}
+                    href={reciterHref(r.id)}
                     className="text-xs font-medium text-gold-300/90 hover:text-gold-200"
                   >
                     View recitations

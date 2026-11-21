@@ -10,6 +10,7 @@
 import { foundationFetch } from '@/lib/quran-foundation/client';
 import { F } from '@/lib/quran-foundation/endpoints';
 import { isFoundationConfigured } from '@/lib/quran-foundation/env';
+import { sanitizeHtml } from '@/lib/utils/sanitizeHtml';
 
 interface FVerse {
   verse_number?: number;
@@ -39,7 +40,8 @@ export async function getTajweedSurah(surah: number): Promise<TajweedAyah[] | nu
     .map<TajweedAyah>((v, i) => ({
       ayahNumber: v.verse_number ?? i + 1,
       verseKey: v.verse_key ?? `${surah}:${v.verse_number ?? i + 1}`,
-      tajweedHtml: v.text_uthmani_tajweed ?? '',
+      // Provider markup is sanitized: only <tajweed>/<span> with safe class names survive.
+      tajweedHtml: sanitizeHtml(v.text_uthmani_tajweed ?? '', { extraTags: ['tajweed'], allowClass: true }),
     }));
   return out.length ? out : null;
 }

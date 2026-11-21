@@ -98,6 +98,19 @@ export const RECITERS: Reciter[] = [
   { id: 'ar.ghamdi', name: 'Saad Al-Ghamdi', style: 'Murattal', hasSurahAudio: true, hasAyahAudio: true, source: HOME_RECITER_SOURCE },
 ];
 
+/**
+ * Quran.Foundation recitation IDs for the featured reciters, so "View
+ * recitations" opens a real /reciters/{id} profile. Reciters not in the
+ * Foundation catalog (no entry) link to the directory instead.
+ */
+export const RECITER_PROFILE_IDS: Record<string, string> = {
+  'ar.alafasy': '7',
+  'ar.sudais': '3',
+  'ar.minshawi': '8',
+  'ar.husary': '6',
+  'ar.shuraim': '10',
+};
+
 export const TOPICS: Topic[] = [
   { slug: 'mercy', label: 'Mercy' },
   { slug: 'patience', label: 'Patience' },
@@ -133,7 +146,7 @@ export const LEARNING_ARTICLES: LearningArticle[] = [
     description: 'Reflect on the meanings of Allah’s beautiful names from verified sources.',
   },
   {
-    slug: 'stories-of-prophets',
+    slug: 'stories-of-the-prophets',
     category: 'History',
     title: 'Stories of the Prophets',
     description: 'Narratives of the Messengers as preserved in the Quran.',

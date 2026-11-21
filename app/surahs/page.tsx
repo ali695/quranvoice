@@ -7,6 +7,8 @@ import { listAllSurahs } from '@/lib/services/quranService';
 export const metadata: Metadata = {
   title: 'All Surahs',
   description: 'Browse all 114 surahs of the Quran with name, meaning, ayah count, and revelation.',
+  // Same list as /quran (plus a Meccan/Medinan filter) — consolidate ranking there.
+  alternates: { canonical: '/quran' },
 };
 
 interface SearchParams {

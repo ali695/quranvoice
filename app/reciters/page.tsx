@@ -7,6 +7,8 @@ import { listReciters } from '@/lib/services/audioService';
 export const metadata: Metadata = {
   title: 'Reciters',
   description: 'Reciter directory with profile pages, audio styles, and source attribution.',
+  // Same reciter list as /recitations — consolidate ranking there.
+  alternates: { canonical: '/recitations' },
 };
 
 export default async function RecitersPage() {

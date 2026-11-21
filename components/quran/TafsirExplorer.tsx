@@ -7,6 +7,7 @@ import { SURAHS } from '@/lib/data/surahs';
 import { languageName } from '@/lib/utils/languageNames';
 import { providerLabel } from '@/lib/tafsir/tafsir-source-priority';
 import type { NormalizedTafsir, TafsirResource } from '@/lib/types/tafsir';
+import { sanitizeHtml } from '@/lib/utils/sanitizeHtml';
 
 const looksHtml = (s: string) => /<[a-z][\s\S]*>/i.test(s);
 
@@ -207,7 +208,7 @@ export function TafsirExplorer() {
               <div
                 dir={rtl ? 'rtl' : 'ltr'}
                 className={`mt-3 leading-relaxed text-cream-100/90 ${rtl ? 'text-right text-base' : 'text-sm'}`}
-                dangerouslySetInnerHTML={{ __html: tafsir.content }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(tafsir.content, { allowClass: true }) }}
               />
             ) : (
               <p

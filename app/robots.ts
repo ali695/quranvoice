@@ -1,7 +1,11 @@
 import type { MetadataRoute } from 'next';
+import { APP_BASE_URL } from '@/lib/i18n/hreflang';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://quranvoice.app';
-
+/**
+ * Only block what crawlers must never fetch. Private and thin pages are NOT
+ * disallowed here on purpose: they send `X-Robots-Tag: noindex` (see
+ * next.config.js), and a crawler has to be allowed to fetch a page to see it.
+ */
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
@@ -10,20 +14,12 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: [
           '/api/', // server endpoints
-          '/auth/callback', // OAuth callback
-          '/auth/callback/', // and its status sub-route
+          '/auth/callback', // OAuth callback (and its /status sub-route)
           '/developers/quran-oauth-test', // dev-only tester
-          '/profile', // private user pages
-          '/bookmarks',
-          '/notes',
-          '/goals',
-          '/progress',
-          '/collections',
-          '/settings',
+          '/developers/api-test', // dev-only diagnostics
         ],
       },
     ],
-    sitemap: `${APP_URL}/sitemap.xml`,
-    host: APP_URL,
+    sitemap: `${APP_BASE_URL}/sitemap.xml`,
   };
 }

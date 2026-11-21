@@ -1,42 +1,36 @@
 /**
- * QuranVoice locale middleware.
+ * QuranVoice locale proxy.
  *
- * Resolves the active locale per request from three sources, in order:
- *   1. URL prefix      → /ur/quran/2/255  ⇒  ur
- *   2. Cookie          → qv-locale=hi      ⇒  hi
- *   3. Accept-Language → fr-FR, fr;q=0.9   ⇒  fr (if supported)
+ * One URL = one language:
+ *   - Unprefixed URLs (/quran/2/255) are always English.
+ *   - Prefixed URLs (/ur/quran/2/255) are that locale; we REWRITE (not
+ *     redirect) to the unprefixed route so pages keep their locations, and
+ *     pass the locale to server components via a request header.
+ *   - A reader who chose another language (qv-locale cookie) and lands on an
+ *     unprefixed URL is sent to the prefixed version with a temporary
+ *     redirect. Crawlers carry no cookie, so they always get English.
+ *   - Accept-Language is NOT used: auto-switching content at the same URL
+ *     confuses caches and search engines.
  *
- * For URL-prefixed paths we REWRITE (not redirect) to the unprefixed path,
- * so all existing pages continue to render at their original locations.
- * The resolved locale travels through a request header so server components
- * can read it via `lib/i18n/server.ts → getCurrentLocale()`.
- *
- * The default locale (`en`) is served at the bare URLs, keeping canonical
- * English URLs short and SEO-friendly.
+ * Indexing: prefixed locales that are not in INDEXABLE_LOCALES, and any host
+ * other than the canonical NEXT_PUBLIC_APP_URL host (e.g. *.vercel.app
+ * previews), get `X-Robots-Tag: noindex, follow`.
  */
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { I18N, splitLocalePath } from './lib/i18n/config';
-import { DEFAULT_LOCALE, LOCALE_CODES, isSupportedLocale, type LocaleCode } from './lib/i18n/locales';
+import { I18N, getLocalizedPath, splitLocalePath } from './lib/i18n/config';
+import { DEFAULT_LOCALE, INDEXABLE_LOCALES, isSupportedLocale } from './lib/i18n/locales';
 
-const SUPPORTED = new Set<string>(LOCALE_CODES);
-
-/** Pick the highest-priority supported locale from an Accept-Language string. */
-function pickFromAcceptLanguage(header: string | null): LocaleCode | null {
-  if (!header) return null;
-  // Format: "fr-FR,fr;q=0.9,en;q=0.8"
-  const parts = header
-    .split(',')
-    .map((p) => {
-      const [lang, q] = p.trim().split(';q=');
-      return { lang: lang.toLowerCase(), q: q ? Number(q) : 1 };
-    })
-    .sort((a, b) => b.q - a.q);
-  for (const { lang } of parts) {
-    const primary = lang.split('-')[0];
-    if (SUPPORTED.has(primary)) return primary as LocaleCode;
+const CANONICAL_HOST = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://quranvoice.app').host;
+  } catch {
+    return 'quranvoice.app';
   }
-  return null;
+})();
+
+function isLocalHost(host: string): boolean {
+  return /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host);
 }
 
 export function proxy(request: NextRequest) {
@@ -55,37 +49,39 @@ export function proxy(request: NextRequest) {
   }
 
   const { locale: urlLocale, rest } = splitLocalePath(pathname);
-  let resolved: LocaleCode;
-  let shouldRewrite = false;
 
-  if (urlLocale) {
-    resolved = urlLocale;
-    // Rewrite away the prefix so existing pages handle the request.
-    shouldRewrite = true;
-  } else {
-    // Cookie → Accept-Language → default
+  // Remembered non-English choice on an unprefixed URL → its localized URL.
+  if (!urlLocale) {
     const cookieLocale = request.cookies.get(I18N.cookieName)?.value;
-    if (cookieLocale && isSupportedLocale(cookieLocale)) {
-      resolved = cookieLocale;
-    } else {
-      resolved = pickFromAcceptLanguage(request.headers.get('accept-language')) ?? DEFAULT_LOCALE;
+    if (cookieLocale && cookieLocale !== DEFAULT_LOCALE && isSupportedLocale(cookieLocale)) {
+      const target = new URL(getLocalizedPath(cookieLocale, pathname) + url.search, url);
+      return NextResponse.redirect(target, 307);
     }
   }
 
-  // Build the downstream request, with the locale header attached.
+  const resolved = urlLocale ?? DEFAULT_LOCALE;
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(I18N.headerName, resolved);
 
-  const response = shouldRewrite
+  const response = urlLocale
     ? NextResponse.rewrite(new URL(rest + url.search, url), { request: { headers: requestHeaders } })
     : NextResponse.next({ request: { headers: requestHeaders } });
 
-  // Persist the resolved locale so future requests skip detection.
-  response.cookies.set(I18N.cookieName, resolved, {
-    path: '/',
-    maxAge: I18N.cookieMaxAge,
-    sameSite: 'lax',
-  });
+  const host = request.headers.get('host') ?? '';
+  const offCanonicalHost = host !== CANONICAL_HOST && !isLocalHost(host);
+  const unindexedLocale = !INDEXABLE_LOCALES.includes(resolved);
+  if (offCanonicalHost || unindexedLocale) {
+    response.headers.set('X-Robots-Tag', 'noindex, follow');
+  }
+
+  // Remember an explicit locale visit so unprefixed links keep the reader in it.
+  if (urlLocale) {
+    response.cookies.set(I18N.cookieName, urlLocale, {
+      path: '/',
+      maxAge: I18N.cookieMaxAge,
+      sameSite: 'lax',
+    });
+  }
   return response;
 }
 

@@ -34,7 +34,7 @@ export const LEARNING_ARTICLES: LearningArticle[] = [
     description: 'A reading guide to the narratives of the Messengers as preserved in the Quran.',
   },
   {
-    slug: 'duas',
+    slug: 'quranic-duas',
     category: 'Worship',
     title: 'Quranic Duas',
     description: 'How to study selected supplications mentioned in the Book of Allah.',

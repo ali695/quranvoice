@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { I18N } from './config';
+import { I18N, getLocalizedPath, splitLocalePath } from './config';
 import { DEFAULT_LOCALE, isSupportedLocale, type LocaleCode, getLocaleDirection } from './locales';
 import { translate } from './messages';
 
@@ -50,9 +50,10 @@ export function LocaleProvider({
       document.cookie = `${I18N.cookieName}=${next}; Path=/; Max-Age=${I18N.cookieMaxAge}; SameSite=Lax`;
     }
     setLocaleState(next);
-    // Reload so server components and metadata pick up the new locale.
+    // Navigate to the same page in the chosen locale (one URL = one language).
     if (typeof window !== 'undefined') {
-      window.location.reload();
+      const { rest } = splitLocalePath(window.location.pathname);
+      window.location.assign(getLocalizedPath(next, rest) + window.location.search + window.location.hash);
     }
   }, []);
 

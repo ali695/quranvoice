@@ -7,18 +7,19 @@
  */
 
 import { I18N, getLocalizedPath } from './config';
-import { DEFAULT_LOCALE, LOCALES } from './locales';
+import { DEFAULT_LOCALE, INDEXABLE_LOCALES, LOCALES, LOCALE_CODES } from './locales';
 
 export interface HreflangEntry {
   hreflang: string;
   href: string;
 }
 
-const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? 'https://quranvoice.app').replace(/\/$/, '');
+const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? 'https://quranvoice.app').replace(/\/+$/, '');
 
 /** Strip a possibly-already-prefixed locale segment to get the canonical path. */
 function canonicalPath(path: string): string {
-  return path.replace(/^\/(en|ar|ur|hi|bn|id|tr|de|fr|es|ru|fa|ms|zh|ja|ko|it)(?=\/|$)/, '') || '/';
+  const re = new RegExp(`^/(${LOCALE_CODES.join('|')})(?=/|$)`);
+  return path.replace(re, '') || '/';
 }
 
 /**
@@ -31,10 +32,11 @@ export function generateHreflangAlternates(path: string): {
 } {
   const base = canonicalPath(path);
   const languages: Record<string, string> = {};
-  for (const l of LOCALES) {
+  // hreflang is only meaningful when more than one locale is genuinely indexable.
+  for (const l of INDEXABLE_LOCALES.length > 1 ? LOCALES.filter((x) => INDEXABLE_LOCALES.includes(x.code)) : []) {
     languages[l.hreflang] = `${APP_URL}${getLocalizedPath(l.code, base)}`;
   }
-  languages['x-default'] = `${APP_URL}${getLocalizedPath(DEFAULT_LOCALE, base)}`;
+  if (Object.keys(languages).length) languages['x-default'] = `${APP_URL}${getLocalizedPath(DEFAULT_LOCALE, base)}`;
   return {
     canonical: `${APP_URL}${getLocalizedPath(DEFAULT_LOCALE, base)}`,
     languages,
@@ -45,7 +47,8 @@ export function generateHreflangAlternates(path: string): {
 export function generateHreflangArray(path: string): HreflangEntry[] {
   const base = canonicalPath(path);
   const out: HreflangEntry[] = [];
-  for (const l of LOCALES) {
+  if (INDEXABLE_LOCALES.length < 2) return out;
+  for (const l of LOCALES.filter((x) => INDEXABLE_LOCALES.includes(x.code))) {
     out.push({ hreflang: l.hreflang, href: `${APP_URL}${getLocalizedPath(l.code, base)}` });
   }
   out.push({ hreflang: 'x-default', href: `${APP_URL}${getLocalizedPath(DEFAULT_LOCALE, base)}` });
