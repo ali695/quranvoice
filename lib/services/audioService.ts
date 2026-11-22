@@ -116,7 +116,7 @@ export async function listReciters(): Promise<Reciter[]> {
         hasSurahAudio: true,
         hasAyahAudio: true,
         source: {
-          name: 'Quran.Foundation recitations catalog',
+          name: 'Verified recitation',
           url: 'https://api-docs.quran.foundation/',
           verified: true,
         },

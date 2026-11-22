@@ -21,7 +21,7 @@ export default function TwelveLinePage() {
       highlight="12-line"
       description="The 12-line Mushaf packs more verses per page than the 8-line, with the same fidelity expectation. QuranVoice activates this layout when a verified 12-line line-break dataset is registered."
       status="locked"
-      sourceRequirement="This Mushaf line style needs verified line-break data before activation. We do not synthesize 12-line page breaks — when a verified dataset is connected, the layout becomes available system-wide."
+      sourceRequirement="The 12-line layout is not available yet. We only show a Mushaf layout once we have its exact printed line breaks, so nothing is approximated. Meanwhile, read in the 15-line Madani or 16-line Indo-Pak layout."
       primaryCta={{ label: 'Open the reader', href: '/quran' }}
       secondaryCta={{ label: 'See all Mushaf styles', href: '/mushaf' }}
       pattern="lines"

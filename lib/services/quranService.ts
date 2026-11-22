@@ -120,7 +120,7 @@ export async function getSurahWithAyahs(num: number): Promise<SurahWithAyahs | n
         surah: meta,
         ayahs,
         textResourceId: 'foundation-uthmani',
-        textSourceName: 'Quran.Foundation (Uthmani)',
+        textSourceName: 'Uthmani script',
         provider: 'foundation',
       };
     }
@@ -145,7 +145,7 @@ export async function getSurahWithAyahs(num: number): Promise<SurahWithAyahs | n
       surah: meta,
       ayahs,
       textResourceId: 'alquran-cloud-uthmani',
-      textSourceName: 'Tanzil.net via AlQuran Cloud',
+      textSourceName: 'Uthmani script (Tanzil)',
       provider: 'alquran-cloud',
     };
   }

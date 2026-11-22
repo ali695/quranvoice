@@ -35,7 +35,7 @@ export function mapEditionToResource(e: Spa5kEdition): TafsirResource {
     provider: 'spa5k_fallback',
     isFallback: true,
     source: {
-      name: 'Fallback Tafsir API (spa5k/tafsir_api)',
+      name: 'Additional tafsir library',
       url: e.source || REPO_URL,
       verified: false,
     },

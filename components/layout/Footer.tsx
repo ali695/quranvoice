@@ -11,7 +11,7 @@ const COLUMNS: { title: string; key: keyof typeof FOOTER_LINKS }[] = [
   { title: 'Learn', key: 'learn' },
   { title: 'Tools', key: 'tools' },
   { title: 'Account & Support', key: 'account' },
-  { title: 'Legal & Developers', key: 'legal' },
+  { title: 'Legal', key: 'legal' },
 ];
 
 const SOCIAL = [

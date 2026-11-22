@@ -5,7 +5,7 @@ import { WordByWordExplorer } from '@/components/quran/WordByWordExplorer';
 
 export const metadata: Metadata = {
   title: 'Word by Word',
-  description: 'Word-by-word Quran with transliteration and meaning from Quran.Foundation.',
+  description: 'Word-by-word Quran with transliteration and the meaning of every word.',
 };
 
 export default function WordByWordPage() {

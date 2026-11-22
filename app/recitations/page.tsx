@@ -46,7 +46,7 @@ export default async function RecitationsPage() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-cream-50">{r.name}</p>
-                <p className="text-xs text-cream-200/55">{r.source.name}</p>
+                <p className="text-xs text-cream-200/55">{r.style ?? 'Murattal'}</p>
               </div>
               <Button href={`/reciters/${r.id}`} size="sm" variant="secondary">
                 Open

@@ -693,7 +693,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
         const url = await resolveSurahAudio(reciterIdRef.current, surah);
         if (url) {
           playFrom(url);
-          setNotice('This reciter has no word timing, so the live pointer is off. Pick a synced reciter to follow along.');
+          setNotice('Word highlighting is not available for this reciter. Choose another reciter to follow along.');
         } else {
           setIsLoading(false);
           setNotice('Surah audio is not available for this reciter.');

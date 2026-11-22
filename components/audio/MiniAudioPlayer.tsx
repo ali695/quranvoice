@@ -82,14 +82,6 @@ export function MiniAudioPlayer() {
               {now.ayah ? <span className="text-gold-300"> · Ayah {now.ayah}</span> : null}
             </span>
             {now.reciterName && <span className="text-xs text-cream-200/55">· {now.reciterName}</span>}
-            {syncedSurah && (
-              <span
-                className="rounded-full border border-gold-500/40 px-2 py-px text-[10px] uppercase tracking-wider text-gold-300"
-                title="Ayah and word highlighting use the recording's real timestamps"
-              >
-                Live pointer
-              </span>
-            )}
           </div>
           {notice && <p className="mt-0.5 truncate text-[11px] text-cream-200/60">{notice}</p>}
           <div className="mt-1.5 flex items-center gap-2">

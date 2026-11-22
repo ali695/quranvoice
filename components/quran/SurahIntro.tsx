@@ -37,7 +37,7 @@ export function SurahIntro({ intro, surahName, surahNameArabic }: SurahIntroProp
         />
       </details>
       <p className="mt-4 text-xs text-cream-200/45" dir="ltr" lang="en">
-        Introduction: {intro.source}. Provided via Quran.Foundation.
+        Source: {intro.source}
       </p>
     </section>
   );

@@ -7,7 +7,6 @@ import { NotesPanel } from '@/components/study/NotesPanel';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { loadSettings } from '@/lib/services/settingsService';
-import { providerLabel } from '@/lib/tafsir/tafsir-source-priority';
 import type { NormalizedTafsir } from '@/lib/types/tafsir';
 
 interface DailyVerseExtrasProps {
@@ -105,12 +104,7 @@ export function DailyVerseExtras({ surah, ayah }: DailyVerseExtrasProps) {
             </p>
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <span className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-cream-200/45">
-                Source: {providerLabel(tafsir.provider)} · {tafsir.editionName}
-                {tafsir.isFallback && (
-                  <span className="rounded-full border border-gold-500/30 bg-gold-500/10 px-2 py-0.5 text-[9px] text-gold-200">
-                    Fallback
-                  </span>
-                )}
+                Source: {tafsir.editionName}
               </span>
               <Link
                 href={`/study/${surah}/${ayah}`}

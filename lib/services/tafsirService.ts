@@ -68,7 +68,7 @@ export async function listTafsirs(language = 'en'): Promise<TafsirResource[]> {
           language: iso,
           languageName: t.language_name ?? languageName(iso),
           source: {
-            name: 'Quran.Foundation tafsir catalog',
+            name: 'Tafsir',
             url: 'https://api-docs.quran.foundation/',
             verified: true,
           },
@@ -129,7 +129,7 @@ export async function getTafsirForAyah(
       language: meta?.language ?? item?.language_name ?? 'ar',
       textHtml: text,
       source: {
-        name: `${book} via Quran.Foundation`,
+        name: book,
         url: 'https://api-docs.quran.foundation/',
         verified: true,
       },

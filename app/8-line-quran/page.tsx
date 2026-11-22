@@ -21,7 +21,7 @@ export default function EightLinePage() {
       highlight="8-line"
       description="The 8-line Mushaf is a classical print layout where every page contains exactly eight lines. QuranVoice will render it once a verified line-break dataset is connected — we never approximate page breaks."
       status="locked"
-      sourceRequirement="This Mushaf line style needs verified line-break data before activation. Approximating where lines end would misrepresent the printed mushaf — once a verified dataset (Tanzil layout files, Quran.Foundation mushaf resource, or a licensed publisher's data) is connected, this layout activates automatically."
+      sourceRequirement="The 8-line layout is not available yet. We only show a Mushaf layout once we have its exact printed line breaks, so nothing is approximated. Meanwhile, read in the 15-line Madani or 16-line Indo-Pak layout."
       sourceCredit="When activated, page-level source attribution shows the line-break dataset name."
       primaryCta={{ label: 'Open the reader', href: '/quran' }}
       secondaryCta={{ label: 'See all Mushaf styles', href: '/mushaf' }}

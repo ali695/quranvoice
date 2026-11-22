@@ -35,7 +35,7 @@ export default async function ReciterDetail({ params }: Params) {
       <PageHeader
         eyebrow="Reciter"
         title={reciter.name}
-        description={`${reciter.style ?? 'Recitation'} · ${reciter.source.name}`}
+        description={reciter.style ?? 'Recitation'}
       />
       <AppShell>
         <div className="mb-8 flex flex-wrap items-center gap-5 rounded-2xl border border-ink-600/50 bg-ink-800/40 p-5">
@@ -54,10 +54,6 @@ export default async function ReciterDetail({ params }: Params) {
               {reciter.hasAyahAudio ? 'available' : 'unavailable'}
             </p>
           </div>
-          <p className="ml-auto max-w-xs text-xs text-cream-200/55">
-            Source attribution: {reciter.source.name}. Audio file licensing is the responsibility of
-            the source CDN.
-          </p>
         </div>
 
         <h2 className="font-display text-xl font-medium text-cream-50">Listen by Surah</h2>

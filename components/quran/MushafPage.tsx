@@ -101,7 +101,7 @@ export function MushafPage({ page: initialPage, layoutKey = '15-line' }: MushafP
       </div>
 
       <p className="text-center text-[11px] uppercase tracking-wider text-cream-200/45">
-        {MUSHAF_LAYOUTS.find((l) => l.key === layoutKey)?.label} · Source: Quran.Foundation
+        {MUSHAF_LAYOUTS.find((l) => l.key === layoutKey)?.label}
       </p>
     </div>
   );

@@ -40,6 +40,17 @@ export function readUserAuthEnv(): UserAuthEnv | null {
   };
 }
 
+/**
+ * True when the account sign-in may be shown to the public. In production the
+ * pre-live (test) OAuth environment is hidden unless explicitly allowed, so
+ * real visitors are never sent to a test sign-in server.
+ */
+export function isUserAuthLive(env: UserAuthEnv): boolean {
+  if (process.env.NODE_ENV !== 'production') return true;
+  if (process.env.QURAN_FOUNDATION_USER_ALLOW_PRELIVE === '1') return true;
+  return !/prelive/i.test(env.oauthUrl) && !/prelive/i.test(env.apiBaseUrl);
+}
+
 export function isUserAuthConfigured(): boolean {
   return readUserAuthEnv() !== null;
 }

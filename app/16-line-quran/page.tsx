@@ -21,7 +21,7 @@ export default function SixteenLinePage() {
       <PageHeader
         eyebrow="Mushaf · Page by page"
         title="16-line Indo-Pak Mushaf"
-        description="The classic Indo-Pak page layout, rendered with real printed-line data from Quran.Foundation — no approximated line breaks. Switch to the 15-line Madani Mushaf any time."
+        description="The classic Indo-Pak page layout, with the real printed line breaks — nothing approximated. Switch to the 15-line Madani Mushaf any time."
       />
       <AppShell>
         <MushafReader initialPage={1} defaultLayout="16-line" />

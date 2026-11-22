@@ -21,14 +21,14 @@ export default function UthmaniPage() {
       eyebrow="Mushaf style"
       title="The Uthmani Quran, served from a verified source"
       highlight="Uthmani"
-      description="QuranVoice renders the Uthmani script directly from the Quran.Foundation Content API when configured, with Tanzil via AlQuran Cloud as an open fallback. The text is preserved exactly as published."
+      description="Read the Quran in the Uthmani script, preserved exactly as published — no edits, no re-typing."
       status={ok ? 'available' : 'preview'}
       sourceRequirement={
         ok
-          ? 'Uthmani text is fetched server-side from the Quran.Foundation Content API and never modified. Source attribution travels with every verse.'
-          : 'Connect Quran.Foundation credentials (see SETUP.md) to enable production-grade Uthmani text. Until then, the open AlQuran Cloud / Tanzil dataset is served as a polished fallback.'
+          ? 'The Uthmani text comes from a verified published source and is never modified.'
+          : 'The Uthmani text comes from the open Tanzil dataset and is never modified.'
       }
-      sourceCredit="Source: Quran.Foundation Uthmani text · attribution shown in the reader."
+      sourceCredit="Full source credits are listed on the Sources page."
       primaryCta={{ label: 'Open the reader', href: '/quran' }}
       secondaryCta={{ label: 'Browse all 114 surahs', href: '/surahs' }}
       pattern="star"

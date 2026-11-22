@@ -79,9 +79,6 @@ export const FOOTER_LINKS = {
   legal: [
     { label: 'Sources & attribution', href: '/sources' },
     { label: 'Shan-e-Nuzool source', href: '/sources/shan-e-nuzool' },
-    { label: 'API', href: '/developers' },
-    { label: 'Documentation', href: '/api-docs' },
-    { label: 'Developer Portal', href: '/developers' },
     { label: 'Privacy Policy', href: '/privacy' },
     { label: 'Terms of Service', href: '/terms' },
     { label: 'Cookie Policy', href: '/privacy#cookies' },

@@ -35,7 +35,12 @@ const NOINDEX_PATHS = [
   // Metadata-only detail pages and a duplicate of /quran/{s}/{a}.
   '/translations/:id',
   '/study/:surah/:ayah',
+  '/developers',
   '/developers/:path+',
+  '/api-docs',
+  // Mushaf layouts not available yet (no verified line-break data).
+  '/8-line-quran',
+  '/12-line-quran',
 ];
 
 const SECURITY_HEADERS = [

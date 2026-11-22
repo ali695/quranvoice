@@ -21,7 +21,7 @@ export default function TajweedPage() {
       <PageHeader
         eyebrow="Tajweed Mushaf"
         title="Color-coded Tajweed Quran"
-        description="Real Tajweed rule coloring from Quran.Foundation (text_uthmani_tajweed) — madd, ghunnah, qalqalah, ikhfa, idgham and silent letters. QuranVoice never infers Tajweed colors itself."
+        description="Colour-coded Tajweed rules — madd, ghunnah, qalqalah, ikhfa, idgham and silent letters — on the verified Uthmani text. Colours come from published Tajweed data, never guessed."
       />
       <AppShell>
         <TajweedReader initialSurah={1} />

@@ -49,7 +49,7 @@ export function SurahHeader({ surah, textSourceName }: SurahHeaderProps) {
           {textSourceName && (
             <span className="inline-flex items-center gap-1.5">
               <Icon name="check" size={13} className="text-gold-400" />
-              Text: {textSourceName}
+              {textSourceName}
             </span>
           )}
         </div>

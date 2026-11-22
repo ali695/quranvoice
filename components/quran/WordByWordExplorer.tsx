@@ -96,7 +96,7 @@ export function WordByWordExplorer() {
           {loading ? 'Loading…' : 'Show words'}
         </Button>
         <span className="ml-auto self-center text-xs text-cream-200/55">
-          {surah}:{ayah} · Source: Quran.Foundation word-by-word
+          {surah}:{ayah}
         </span>
       </div>
 

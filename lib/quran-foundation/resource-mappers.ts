@@ -95,7 +95,7 @@ export function mapTafsirResources(
       authorName: t.author_name ?? t.name,
       language: iso,
       languageName: t.language_name ?? iso,
-      source: { ...FOUNDATION_SOURCE, name: 'Quran.Foundation tafsir catalog' },
+      source: { ...FOUNDATION_SOURCE, name: 'Tafsir' },
     };
   });
 }

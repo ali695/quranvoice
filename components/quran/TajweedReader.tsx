@@ -60,8 +60,8 @@ export function TajweedReader({ initialSurah = 1 }: { initialSurah?: number }) {
     return (
       <UnavailableState
         title="Tajweed Quran"
-        badge="Requires verified data"
-        description="Color-coded Tajweed requires verified Tajweed rule data. Connect Quran.Foundation (which provides text_uthmani_tajweed) to read the Tajweed Mushaf — QuranVoice never infers Tajweed colors itself."
+        badge="Unavailable"
+        description="Colour-coded Tajweed is not available right now. Please try again in a moment."
       />
     );
   }
@@ -138,7 +138,7 @@ export function TajweedReader({ initialSurah = 1 }: { initialSurah?: number }) {
       )}
 
       <p className="text-center text-[11px] uppercase tracking-wider text-cream-200/45">
-        Source: Quran.Foundation · text_uthmani_tajweed
+        Colour-coded Tajweed
       </p>
     </div>
   );

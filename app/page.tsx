@@ -28,7 +28,7 @@ const HOME_FAQ = [
   {
     question: 'Which translations and tafsir are available?',
     answer:
-      'Translations are available in many languages (including Urdu, Arabic, Indonesian, Turkish, French and more) from Quran.Foundation, and tafsir can be read per verse with a clear source label. QuranVoice never generates tafsir with AI.',
+      'Translations are available in many languages (including Urdu, Arabic, Indonesian, Turkish, French and more), and tafsir can be read per verse with a clear source label. QuranVoice never generates tafsir with AI.',
   },
   {
     question: 'Does QuranVoice support Tajweed and different Mushaf layouts?',
@@ -38,7 +38,7 @@ const HOME_FAQ = [
   {
     question: 'Is the Arabic Quran text authentic and unaltered?',
     answer:
-      'Yes. The Arabic Quran text is served exactly as published from Quran.Foundation. The app interface language is separate from the Quran translation language.',
+      'Yes. The Arabic Quran text is shown exactly as published, from a verified source. The app interface language is separate from the Quran translation language.',
   },
 ];
 

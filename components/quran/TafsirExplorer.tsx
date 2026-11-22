@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/Button';
 import { UnavailableState } from '@/components/ui/ErrorState';
 import { SURAHS } from '@/lib/data/surahs';
 import { languageName } from '@/lib/utils/languageNames';
-import { providerLabel } from '@/lib/tafsir/tafsir-source-priority';
 import type { NormalizedTafsir, TafsirResource } from '@/lib/types/tafsir';
 import { sanitizeHtml } from '@/lib/utils/sanitizeHtml';
 
@@ -124,7 +123,7 @@ export function TafsirExplorer() {
               </optgroup>
             )}
             {grouped.fb.length > 0 && (
-              <optgroup label="Fallback Tafsir API">
+              <optgroup label="More tafsirs">
                 {grouped.fb.map((t) => (
                   <option key={String(t.id)} value={String(t.id)} className="bg-ink-900">{t.name}</option>
                 ))}
@@ -168,7 +167,7 @@ export function TafsirExplorer() {
       {state === 'idle' && (
         <p className="text-sm text-cream-200/55">
           Choose a language and tafsir source above, then press <strong>Read tafsir</strong>. Urdu,
-          Arabic, English and more are available from Quran.Foundation, with an open fallback source.
+          Arabic, English and more are available.
         </p>
       )}
       {state === 'loading' && (
@@ -198,11 +197,6 @@ export function TafsirExplorer() {
               {tafsir.author && <span className="text-cream-200/45">· {tafsir.author}</span>}
               <span className="text-cream-200/45">· {languageName(tafsir.language)}</span>
               <span className="text-cream-200/45">· {tafsir.verseKey}</span>
-              {tafsir.isFallback && (
-                <span className="rounded-full border border-gold-500/30 bg-gold-500/10 px-2 py-0.5 text-[9px] text-gold-200">
-                  Fallback source
-                </span>
-              )}
             </div>
             {looksHtml(tafsir.content) ? (
               <div
@@ -219,7 +213,7 @@ export function TafsirExplorer() {
               </p>
             )}
             <p className="mt-4 text-[10px] uppercase tracking-wider text-cream-200/45">
-              Source: {providerLabel(tafsir.provider)} · {tafsir.editionName}
+              Source: {tafsir.editionName}
             </p>
           </article>
         ) : (

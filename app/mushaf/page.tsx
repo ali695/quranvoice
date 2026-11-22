@@ -22,14 +22,14 @@ const STYLES = [
     href: '/16-line-quran',
     icon: 'book' as const,
     title: 'Page-by-page Mushaf (15 & 16 line)',
-    body: 'Real printed-page layout from Quran.Foundation — 15-line Madani (KFGQPC) and 16-line Indo-Pak, with genuine line breaks.',
+    body: 'Real printed-page layout — 15-line Madani (KFGQPC) and 16-line Indo-Pak, with genuine line breaks.',
     status: 'Available',
   },
   {
     href: '/uthmani-quran',
     icon: 'book' as const,
     title: 'Uthmani Quran',
-    body: 'Verified Uthmani script from the Quran.Foundation Content API.',
+    body: 'The verified Uthmani script, exactly as published.',
     status: 'Available',
   },
   {
@@ -43,7 +43,7 @@ const STYLES = [
     href: '/tajweed-quran',
     icon: 'sparkle' as const,
     title: 'Tajweed Quran',
-    body: 'Color-coded Tajweed rules rendered from Quran.Foundation’s verified text_uthmani_tajweed.',
+    body: 'Colour-coded Tajweed rules on the verified Uthmani text.',
     status: 'Available',
   },
   {

@@ -64,7 +64,7 @@ export function ReciterSelector() {
 
   return (
     <Select
-      label="Reciter (word-synced)"
+      label="Reciter"
       value={value}
       onChange={(e) => {
         const r = reciters.find((x) => x.id === e.target.value);

@@ -22,12 +22,12 @@ export const TAFSIR_PRIORITY = [
 export type TafsirResolutionStep = (typeof TAFSIR_PRIORITY)[number];
 
 export function providerLabel(provider: TafsirProvider): string {
-  return provider === 'quran_foundation' ? 'Quran.Foundation' : 'Fallback Tafsir API';
+  return provider === 'quran_foundation' ? 'Tafsir library' : 'Additional tafsir library';
 }
 
 /** "Source: Quran.Foundation · Tafsir Ibn Kathir" */
 export function tafsirSourceLabel(t: Pick<NormalizedTafsir, 'provider' | 'editionName'>): string {
-  return `Source: ${providerLabel(t.provider)} · ${t.editionName}`;
+  return `Source: ${t.editionName}`;
 }
 
 /** A tafsir id is a Quran.Foundation resource when it's purely numeric. */

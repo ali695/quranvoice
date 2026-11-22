@@ -23,7 +23,7 @@ export default function QuranVocabularyPage() {
       highlight="words"
       description="A small number of Arabic words make up a very large share of the Quran. QuranVoice will publish a frequency-ordered vocabulary trainer once a verified Quran word-frequency / morphology dataset is registered."
       sourceStatus="needs_source"
-      sourceNote="Word frequency, root analysis, and per-word meanings require a verified dataset (e.g. Quran.Foundation word-by-word, Tanzil morphology, or a published lemma database). Until that lands, the reader's word-by-word panel stays empty and this page shows a planned state."
+      sourceNote="Word frequency, root analysis and per-word meanings will appear here once a reviewed word-level dataset is added. Until then, use the word-by-word view in the reader."
       icon="globe"
       pattern="lines"
       intro={

@@ -43,7 +43,7 @@ export function FoundationConnect({ next = '/profile' }: { next?: string }) {
     <div className="rounded-2xl border border-ink-600/50 bg-ink-800/40 p-5">
       <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-gold-400/80">
         <Icon name="mosque" size={14} />
-        Quran.Foundation account
+        Quran.com account
       </div>
 
       {loading ? (
@@ -69,8 +69,8 @@ export function FoundationConnect({ next = '/profile' }: { next?: string }) {
       ) : (
         <div className="mt-3">
           <p className="text-sm leading-relaxed text-cream-200/75">
-            Connect your Quran.Foundation account to sync bookmarks, notes, and reading progress
-            across apps that use the Foundation.
+            Connect your Quran.com account to sync bookmarks, notes, and reading progress
+            with Quran.com and its connected apps.
           </p>
           <a
             href={loginHref}

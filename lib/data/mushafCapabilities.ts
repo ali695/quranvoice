@@ -83,7 +83,7 @@ export const QURAN_SCRIPTS: QuranScriptCapability[] = [
   {
     value: 'uthmani',
     label: 'Uthmani (recommended)',
-    description: 'Verified Uthmani text from Quran.Foundation (or Tanzil fallback).',
+    description: 'Verified Uthmani text, unaltered.',
     enabled: true,
   },
   {

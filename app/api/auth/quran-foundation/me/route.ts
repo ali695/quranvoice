@@ -7,14 +7,14 @@
  */
 
 import { NextResponse } from 'next/server';
-import { fetchUserInfo, readUserAuthEnv } from '@/lib/quran-foundation/user-oauth';
+import { fetchUserInfo, isUserAuthLive, readUserAuthEnv } from '@/lib/quran-foundation/user-oauth';
 import { getValidAccessToken } from '@/lib/quran-foundation/user-session';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const env = readUserAuthEnv();
-  if (!env) {
+  if (!env || !isUserAuthLive(env)) {
     return NextResponse.json({ configured: false, signedIn: false });
   }
   const token = await getValidAccessToken();

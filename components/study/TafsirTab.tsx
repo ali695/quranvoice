@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/Button';
 import { UnavailableState } from '@/components/ui/ErrorState';
 import { loadSettings, updateSettings } from '@/lib/services/settingsService';
 import { languageName } from '@/lib/utils/languageNames';
-import { providerLabel } from '@/lib/tafsir/tafsir-source-priority';
 import type { NormalizedTafsir, TafsirResource } from '@/lib/types/tafsir';
 import { sanitizeHtml } from '@/lib/utils/sanitizeHtml';
 
@@ -109,7 +108,7 @@ export function TafsirTab({ surah, ayah }: TafsirTabProps) {
       <UnavailableState
         title="Tafsir"
         badge="No sources"
-        description="No tafsir resources are available from Quran.Foundation or the fallback source. Connect Quran.Foundation to unlock tafsir in multiple languages."
+        description="Tafsir is not available right now. Please try again in a moment."
       />
     );
   }
@@ -141,7 +140,7 @@ export function TafsirTab({ surah, ayah }: TafsirTabProps) {
                 </optgroup>
               )}
               {grouped.fb.length > 0 && (
-                <optgroup label="Fallback Tafsir API">
+                <optgroup label="More tafsirs">
                   {grouped.fb.map((t) => (
                     <option key={String(t.id)} value={String(t.id)} className="bg-ink-900">
                       {t.name} · {languageName(t.language)}
@@ -202,11 +201,6 @@ function TafsirContent({ tafsir }: { tafsir: NormalizedTafsir }) {
         <span>{tafsir.editionName}</span>
         {tafsir.author && <span className="text-cream-200/45">· {tafsir.author}</span>}
         <span className="text-cream-200/45">· {languageName(tafsir.language)}</span>
-        {tafsir.isFallback && (
-          <span className="rounded-full border border-gold-500/30 bg-gold-500/10 px-2 py-0.5 text-[9px] text-gold-200">
-            Fallback source
-          </span>
-        )}
       </div>
       {looksHtml(tafsir.content) ? (
         <div
@@ -225,7 +219,7 @@ function TafsirContent({ tafsir }: { tafsir: NormalizedTafsir }) {
         </p>
       )}
       <p className="mt-3 text-[10px] uppercase tracking-wider text-cream-200/45">
-        Source: {providerLabel(tafsir.provider)} · {tafsir.editionName}
+        Source: {tafsir.editionName}
       </p>
     </article>
   );

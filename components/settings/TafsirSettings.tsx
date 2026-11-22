@@ -58,7 +58,7 @@ export function TafsirSettings() {
         <div>
           <h2 className="font-display text-lg font-medium text-cream-50">Tafsir</h2>
           <p className="mt-1 text-sm text-cream-200/65">
-            Default tafsir source, language, and the secondary fallback source.
+            Choose your default tafsir and its language.
           </p>
         </div>
         {!loading && (
@@ -88,11 +88,11 @@ export function TafsirSettings() {
             { value: '', label: 'Auto (best available)' },
             ...groups.qf.map((t) => ({
               value: String(t.id),
-              label: `Quran.Foundation · ${t.name}`,
+              label: t.name,
             })),
             ...groups.fb.map((t) => ({
               value: String(t.id),
-              label: `Fallback · ${t.name} (${languageName(t.language)})`,
+              label: `${t.name} (${languageName(t.language)})`,
             })),
           ]}
           onChange={(e) => patch({ defaultTafsirId: e.target.value || null })}
@@ -117,11 +117,10 @@ export function TafsirSettings() {
           className="mt-0.5 h-4 w-4 accent-gold-500"
         />
         <span>
-          <span className="font-medium text-cream-50">Use fallback tafsir source</span>
+          <span className="font-medium text-cream-50">Include additional tafsir editions</span>
           <span className="mt-1 block text-xs leading-relaxed text-cream-200/65">
-            Quran.Foundation is always tried first. When it has no tafsir for a verse or your
-            chosen language, QuranVoice falls back to the open spa5k Tafsir API (clearly labelled).
-            Disable to use Quran.Foundation only.
+            Adds more tafsir editions and languages from an open tafsir library. Each one is shown
+            with its name and author.
           </span>
         </span>
       </label>
@@ -131,7 +130,7 @@ export function TafsirSettings() {
           <UnavailableState
             title="No tafsir for this language"
             badge="Try another language"
-            description="Neither Quran.Foundation nor the fallback source has a tafsir in this language. Pick another tafsir language above."
+            description="No tafsir is available in this language yet. Pick another language above."
           />
         </div>
       )}

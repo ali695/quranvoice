@@ -13,7 +13,7 @@ import type { SourceReference } from '@/lib/types/learning';
 export const SRC_QURAN_FOUNDATION: SourceReference = {
   id: 'quran-foundation',
   sourceType: 'quran',
-  title: 'Quran.Foundation Content API',
+  title: 'The Noble Quran (Uthmani script)',
   url: 'https://api-docs.quran.foundation/',
   reference: 'Quran (Uthmani text)',
   licenseStatus: 'verified_allowed',

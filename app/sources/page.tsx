@@ -31,8 +31,8 @@ export default async function SourcesPage() {
           <p>
             <strong>Provider:</strong> {summary.registry.quranTextSourceName}.{' '}
             {summary.health.foundationConfigured
-              ? 'The Uthmani text and verse metadata are fetched from the Quran.Foundation Content API.'
-              : 'Until Quran.Foundation credentials are configured, the open Tanzil text served by AlQuran Cloud is used as a fallback.'}
+              ? 'The Uthmani text and verse details are published by Quran.Foundation, the team behind Quran.com.'
+              : 'The Uthmani text comes from the open Tanzil Project dataset.'}
           </p>
 
           <h2>Translations ({summary.counts.translations || '—'})</h2>
@@ -50,22 +50,18 @@ export default async function SourcesPage() {
             <Link href="/tafsir">Browse tafsir resources →</Link>
           </p>
 
-          <h3>Fallback tafsir source</h3>
+          <h3>Additional tafsir library</h3>
           <p>
-            QuranVoice primarily uses <strong>Quran.Foundation</strong> for Quranic content. If a
-            tafsir is unavailable from Quran.Foundation for a verse or your selected language,
-            QuranVoice can use a configured <strong>fallback tafsir source</strong> — the open{' '}
+            Most tafsir comes from <strong>Quran.Foundation</strong>. Some additional editions come
+            from the open{' '}
             <a href="https://github.com/spa5k/tafsir_api" target="_blank" rel="noopener noreferrer">
               spa5k/tafsir_api
             </a>{' '}
-            edition set. Fallback tafsir is always displayed with a clear source label and a
-            “Fallback source” badge, so it is never mixed with Quran.Foundation content silently.
+            tafsir library. Every tafsir is shown with its own name and author.
           </p>
           <ul>
-            <li>Quran.Foundation is always tried first; the fallback is secondary.</li>
             <li>Source metadata, edition name, author, and language remain visible.</li>
             <li>QuranVoice does not generate tafsir using AI.</li>
-            <li>You can disable the fallback entirely in Settings → Tafsir.</li>
           </ul>
 
           <h2>Audio recitations ({summary.counts.recitations || '—'})</h2>
@@ -114,9 +110,9 @@ export default async function SourcesPage() {
 
           <h2>Surah introductions</h2>
           <p>
-            The introduction on each surah page comes from the Quran.Foundation Content API (chapter info),
-            in English and Urdu. It is shown word for word with the source line the provider supplies
-            (for example, a named tafsir), and is never rewritten or generated.
+            The introduction on each surah page is published by Quran.Foundation (the team behind
+            Quran.com), in English and Urdu. It is shown word for word with its original source (for
+            example, a named tafsir) and is never rewritten or generated.
           </p>
 
           <h2>Juz, hizb and page structure</h2>
@@ -143,18 +139,6 @@ export default async function SourcesPage() {
         </Prose>
 
         <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <Card variant="elevated" className="p-5">
-            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-gold-400/80">
-              <Icon name="check" size={13} />
-              API health
-            </div>
-            <p className="mt-2 font-display text-base text-cream-50">
-              {summary.health.foundationOk ? 'Quran.Foundation OK' : summary.health.foundationConfigured ? 'Foundation configured (verify connection)' : 'AlQuran Cloud fallback'}
-            </p>
-            <p className="mt-1 text-xs text-cream-200/55">
-              {summary.health.searchScopeEnabled ? 'Search scope: enabled' : 'Search scope: not granted'}
-            </p>
-          </Card>
           <Card variant="elevated" className="p-5">
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-gold-400/80">
               <Icon name="globe" size={13} />
