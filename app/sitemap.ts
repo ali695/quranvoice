@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { APP_BASE_URL, generateHreflangAlternates } from '@/lib/i18n/hreflang';
+import { QURANIC_DUAS } from '@/lib/data/learning/quranicDuas';
 
 /**
  * Canonical, indexable pages only (English, unprefixed).
@@ -66,8 +67,9 @@ const INDEXABLE_PATHS: string[] = [
 export default function sitemap(): MetadataRoute.Sitemap {
   const surahPaths = Array.from({ length: 114 }, (_, i) => `/quran/${i + 1}`);
   const juzPaths = Array.from({ length: 30 }, (_, i) => `/juz/${i + 1}`);
+  const duaPaths = QURANIC_DUAS.map((d) => `/learn/quranic-duas/${d.slug}`);
 
-  return [...INDEXABLE_PATHS, ...surahPaths, ...juzPaths].map((path) => {
+  return [...INDEXABLE_PATHS, ...surahPaths, ...juzPaths, ...duaPaths].map((path) => {
     const { languages } = generateHreflangAlternates(path);
     return {
       url: `${APP_BASE_URL}${path}`,

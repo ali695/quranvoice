@@ -72,6 +72,8 @@ interface AudioPlayerContextValue {
   playFromHere: (surah: number, startAyah: number, surahLabel: string) => void;
   /** Play the surah (optionally from an ayah), synced when timing exists. */
   playSurah: (surah: number, surahLabel: string, ayah?: number) => void;
+  /** Play exactly ayahs from..to of a surah, then stop (repeat-range loops it). */
+  playRange: (surah: number, fromAyah: number, toAyah: number, surahLabel: string) => void;
   /** Jump the recitation to a word of the active synced ayah. */
   seekToWord: (verseKey: string, wordPosition: number) => void;
   pause: () => void;
@@ -492,8 +494,17 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
         lastWordRef.current = null;
         return;
       }
-      // Single ayah, no auto-next: stop at its end.
+      // Bounded playback (single ayah or a range): stop at its end, or loop
+      // back to the start when repeat-range is on.
       if (stopAtRef.current !== null && ms >= stopAtRef.current) {
+        if (repeatRef.current === 'range' && modeRef.current === 'range') {
+          el.currentTime = loopStartRef.current / 1000;
+          lastWordRef.current = null;
+          return;
+        }
+        // Park just inside the last ayah so the pointer doesn't tick over to
+        // the following ayah once paused.
+        el.currentTime = Math.max(0, stopAtRef.current - 30) / 1000;
         stopAtRef.current = null;
         el.pause();
         return;
@@ -703,6 +714,28 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
     [startSynced, leaveSync, playFrom],
   );
 
+  const playRange = useCallback(
+    (surah: number, fromAyah: number, toAyah: number, surahLabel: string) => {
+      const items: QueueItem[] = [];
+      for (let a = fromAyah; a <= toAyah; a++) items.push({ surah, ayah: a, verseKey: `${surah}:${a}`, label: surahLabel });
+      setMode('range');
+      modeRef.current = 'range';
+      setQueue(items);
+      queueRef.current = items;
+      queueIndexRef.current = 0;
+      void (async () => {
+        const ok = await startSynced(surah, surahLabel, { ayah: fromAyah, loopFromStart: false });
+        if (ok) {
+          const end = syncRef.current?.ayahs.find((a) => a.ayah === toAyah);
+          stopAtRef.current = end ? end.to : null;
+        } else {
+          await startAyahFile(surah, fromAyah, surahLabel);
+        }
+      })();
+    },
+    [startSynced, startAyahFile],
+  );
+
   const setReciter = useCallback(
     (id: string, name?: string) => {
       reciterIdRef.current = id; // update immediately so a following play() uses it
@@ -832,6 +865,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       playAyah,
       playFromHere,
       playSurah,
+      playRange,
       seekToWord,
       pause,
       resume,
@@ -866,6 +900,7 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       playAyah,
       playFromHere,
       playSurah,
+      playRange,
       seekToWord,
       pause,
       resume,
