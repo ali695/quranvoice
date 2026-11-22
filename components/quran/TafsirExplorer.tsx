@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { UnavailableState } from '@/components/ui/ErrorState';
 import { SURAHS } from '@/lib/data/surahs';
@@ -69,26 +69,45 @@ export function TafsirExplorer() {
     [inLang],
   );
 
+  // Only the latest request may update the screen — a slow response for a
+  // previous surah/ayah must never replace the current one.
+  const requestSeq = useRef(0);
   const read = useCallback(
     async (id: string, s: number, a: number, lang: string) => {
+      const seq = ++requestSeq.current;
+      setTafsir(null);
       setState('loading');
       try {
         const res = await fetch(
           `/api/quran/tafsirs/by-verse/${s}/${a}?id=${encodeURIComponent(id)}&lang=${encodeURIComponent(lang)}&fallback=1`,
         );
+        if (seq !== requestSeq.current) return;
         if (!res.ok) {
           setState('error');
           return;
         }
         const json = (await res.json()) as { data?: NormalizedTafsir | null };
-        setTafsir(json.data ?? null);
+        if (seq !== requestSeq.current) return;
+        const data = json.data ?? null;
+        // Defensive: never show commentary for a different verse than requested.
+        setTafsir(data && data.surahNumber === s && data.ayahNumber === a ? data : null);
         setState('loaded');
       } catch {
-        setState('error');
+        if (seq === requestSeq.current) setState('error');
       }
     },
     [],
   );
+
+  // Load automatically whenever the surah, ayah, tafsir or language changes
+  // (short delay so typing an ayah number doesn't fire on every keystroke).
+  useEffect(() => {
+    if (resources.length === 0) return;
+    const t = window.setTimeout(() => void read(selectedId, surah, ayah, language), 250);
+    return () => window.clearTimeout(t);
+  }, [selectedId, surah, ayah, language, resources.length, read]);
+
+  const surahName = SURAHS.find((x) => x.number === surah)?.transliteration ?? `Surah ${surah}`;
 
   const rtl = tafsir ? /[؀-ۿ]/.test(tafsir.content.slice(0, 40)) : false;
 
@@ -116,7 +135,7 @@ export function TafsirExplorer() {
           <select value={selectedId} onChange={(e) => setSelectedId(e.target.value)} className="select-base">
             <option value="auto" className="bg-ink-900">Auto (best available)</option>
             {grouped.qf.length > 0 && (
-              <optgroup label="Quran.Foundation">
+              <optgroup label="Tafsirs">
                 {grouped.qf.map((t) => (
                   <option key={String(t.id)} value={String(t.id)} className="bg-ink-900">{t.name}</option>
                 ))}
@@ -166,7 +185,7 @@ export function TafsirExplorer() {
 
       {state === 'idle' && (
         <p className="text-sm text-cream-200/55">
-          Choose a language and tafsir source above, then press <strong>Read tafsir</strong>. Urdu,
+          Choose a language, a tafsir, a surah and an ayah — the tafsir loads automatically. Urdu,
           Arabic, English and more are available.
         </p>
       )}
@@ -196,8 +215,16 @@ export function TafsirExplorer() {
               <span>{tafsir.editionName}</span>
               {tafsir.author && <span className="text-cream-200/45">· {tafsir.author}</span>}
               <span className="text-cream-200/45">· {languageName(tafsir.language)}</span>
-              <span className="text-cream-200/45">· {tafsir.verseKey}</span>
+              <span className="text-cream-200/45">
+                · Surah {surahName} {tafsir.verseKey}
+              </span>
             </div>
+            {selectedId !== 'auto' && String(tafsir.editionSlug) !== selectedId && (
+              <p className="mt-3 rounded-lg border border-gold-500/30 bg-gold-500/5 px-3 py-2 text-xs text-gold-100/90">
+                {resources.find((t) => String(t.id) === selectedId)?.name ?? 'The selected tafsir'} has no commentary on
+                this verse, so {tafsir.editionName} is shown instead.
+              </p>
+            )}
             {looksHtml(tafsir.content) ? (
               <div
                 dir={rtl ? 'rtl' : 'ltr'}

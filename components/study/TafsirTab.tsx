@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { UnavailableState } from '@/components/ui/ErrorState';
 import { loadSettings, updateSettings } from '@/lib/services/settingsService';
@@ -67,22 +67,29 @@ export function TafsirTab({ surah, ayah }: TafsirTabProps) {
     };
   }, []);
 
+  // Only the latest request may update the panel (no stale verse/tafsir).
+  const requestSeq = useRef(0);
   const fetchTafsir = useCallback(
     async (id: string) => {
+      const seq = ++requestSeq.current;
+      setTafsir(null);
       setState('loading');
       try {
         const res = await fetch(
           `/api/quran/tafsirs/by-verse/${surah}/${ayah}?id=${encodeURIComponent(id)}&lang=${encodeURIComponent(language)}&fallback=${fallbackEnabled ? '1' : '0'}`,
         );
+        if (seq !== requestSeq.current) return;
         if (!res.ok) {
           setState('error');
           return;
         }
         const json = (await res.json()) as { data?: NormalizedTafsir | null };
-        setTafsir(json.data ?? null);
+        if (seq !== requestSeq.current) return;
+        const data = json.data ?? null;
+        setTafsir(data && data.surahNumber === surah && data.ayahNumber === ayah ? data : null);
         setState('loaded');
       } catch {
-        setState('error');
+        if (seq === requestSeq.current) setState('error');
       }
     },
     [surah, ayah, language, fallbackEnabled],
@@ -131,7 +138,7 @@ export function TafsirTab({ surah, ayah }: TafsirTabProps) {
                 Auto (best available)
               </option>
               {grouped.qf.length > 0 && (
-                <optgroup label="Quran.Foundation">
+                <optgroup label="Tafsirs">
                   {grouped.qf.map((t) => (
                     <option key={String(t.id)} value={String(t.id)} className="bg-ink-900">
                       {t.name} · {languageName(t.language)}
@@ -181,7 +188,15 @@ export function TafsirTab({ surah, ayah }: TafsirTabProps) {
 
       {state === 'loaded' &&
         (tafsir ? (
-          <TafsirContent tafsir={tafsir} />
+          <>
+            {selectedId !== 'auto' && String(tafsir.editionSlug) !== selectedId && (
+              <p className="rounded-lg border border-gold-500/30 bg-gold-500/5 px-3 py-2 text-xs text-gold-100/90">
+                {resources.find((t) => String(t.id) === selectedId)?.name ?? 'The selected tafsir'} has no
+                commentary on this verse, so {tafsir.editionName} is shown instead.
+              </p>
+            )}
+            <TafsirContent tafsir={tafsir} />
+          </>
         ) : (
           <UnavailableState
             title="No tafsir for this verse"

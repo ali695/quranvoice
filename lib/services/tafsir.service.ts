@@ -71,9 +71,15 @@ export async function resolveTafsirForVerse(
 ): Promise<NormalizedTafsir | null> {
   const { surah, ayah, selectedId, language, fallbackEnabled } = opts;
 
-  // 1. Quran.Foundation selected.
+  // 1. The tafsir the reader actually selected — always first, whichever
+  //    library it comes from. (Previously a selected additional-library
+  //    edition was skipped in favour of the default, so readers who picked
+  //    e.g. Jalalayn silently got Ibn Kathir.)
   if (isQuranFoundationId(selectedId)) {
     const r = await qfTafsir(Number(selectedId), surah, ayah);
+    if (r) return r;
+  } else if (fallbackEnabled && isFallbackSlug(selectedId)) {
+    const r = await getFallbackTafsirForVerse(String(selectedId), surah, ayah);
     if (r) return r;
   }
 
@@ -86,10 +92,6 @@ export async function resolveTafsirForVerse(
 
   // 3 & 4. spa5k fallback (only when enabled).
   if (fallbackEnabled) {
-    if (isFallbackSlug(selectedId)) {
-      const r = await getFallbackTafsirForVerse(String(selectedId), surah, ayah);
-      if (r) return r;
-    }
     const r = await getDefaultFallbackTafsirForVerse(language, surah, ayah);
     if (r) return r;
   }
